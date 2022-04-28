@@ -6,7 +6,6 @@ import FontistoIcons from 'react-native-vector-icons/Fontisto';
 import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
 import testJsonFile from '../data.json';
-
 export default class PrincipalScreen extends React.Component {
 
     constructor(props) {

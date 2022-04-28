@@ -22,10 +22,12 @@ const SignUpPage = (props) => {
   const [errortext, setErrortext] = useState('');
   const [isRegistrationSuccess, setIsRegistraionSuccess] = useState(false);
 
+  const surnameInputRef = createRef();
   const emailInputRef = createRef();
+  const passwordInputRef = createRef();
   const ageInputRef = createRef();
   const addressInputRef = createRef();
-  const passwordInputRef = createRef();
+  const phoneNumberInputRef = createRef();
 
   const handleSubmitButton = () => {
     setErrortext('');
@@ -33,8 +35,16 @@ const SignUpPage = (props) => {
       alert('Please fill Name');
       return;
     }
+    if (!userSurname) {
+      alert('Please fill Surname');
+      return;
+    }
     if (!userEmail) {
       alert('Please fill Email');
+      return;
+    }
+    if (!userPassword) {
+      alert('Please fill Password');
       return;
     }
     if (!userAge) {
@@ -45,8 +55,8 @@ const SignUpPage = (props) => {
       alert('Please fill Address');
       return;
     }
-    if (!userPassword) {
-      alert('Please fill Password');
+    if (!userPhoneNumber) {
+      alert('Please fill Phone Number');
       return;
     }
   };
@@ -84,14 +94,14 @@ const SignUpPage = (props) => {
           <View style={styles.NameSectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserName) => setUserName(UserName)}
+              onChangeText={(userName) => setUserName(userName)}
               underlineColorAndroid="#f000"
               placeholder="Enter Name"
               placeholderTextColor="#8b9cb5"
               autoCapitalize="sentences"
               returnKeyType="next"
               onSubmitEditing={() =>
-                emailInputRef.current && emailInputRef.current.focus()
+                surnameInputRef.current && surnameInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -99,16 +109,15 @@ const SignUpPage = (props) => {
           <View style={styles.SurnameSectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAge) => setUserSurname(UserSurname)}
+              onChangeText={(userSurname) => setUserSurname(userSurname)}
               underlineColorAndroid="#f000"
               placeholder="Enter Surname"
               placeholderTextColor="#8b9cb5"
-              keyboardType="numeric"
-              ref={ageInputRef}
+              autoCapitalize='sentences'
+              ref={surnameInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                addressInputRef.current &&
-                addressInputRef.current.focus()
+                emailInputRef.current && emailInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -124,8 +133,7 @@ const SignUpPage = (props) => {
               ref={emailInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                passwordInputRef.current &&
-                passwordInputRef.current.focus()
+                passwordInputRef.current && passwordInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -143,8 +151,7 @@ const SignUpPage = (props) => {
               returnKeyType="next"
               secureTextEntry={true}
               onSubmitEditing={() =>
-                ageInputRef.current &&
-                ageInputRef.current.focus()
+                ageInputRef.current && ageInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -160,8 +167,7 @@ const SignUpPage = (props) => {
               ref={ageInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                addressInputRef.current &&
-                addressInputRef.current.focus()
+                addressInputRef.current && addressInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
@@ -169,16 +175,15 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAddress) =>
-                setUserAddress(UserAddress)
-              }
+              onChangeText={(UserAddress) => setUserAddress(UserAddress)}
               underlineColorAndroid="#f000"
               placeholder="Enter Address"
               placeholderTextColor="#8b9cb5"
-              autoCapitalize="sentences"
+              autoCapitalize='words'
               ref={addressInputRef}
               returnKeyType="next"
-              onSubmitEditing={Keyboard.dismiss}
+              onSubmitEditing={() =>
+                phoneNumberInputRef.current && phoneNumberInputRef.current.focus()}
               blurOnSubmit={false}
             />
           </View>
@@ -190,12 +195,9 @@ const SignUpPage = (props) => {
               placeholder="Enter Phone Number"
               placeholderTextColor="#8b9cb5"
               keyboardType="numeric"
-              ref={ageInputRef}
+              ref={phoneNumberInputRef}
               returnKeyType="next"
-              onSubmitEditing={() =>
-                addressInputRef.current &&
-                addressInputRef.current.focus()
-              }
+              onSubmitEditing={Keyboard.dismiss}
               blurOnSubmit={false}
             />
           </View>
