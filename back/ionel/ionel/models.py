@@ -5,46 +5,25 @@ from django.utils import timezone
 from django.db import models
 
 # Create your models here.
-class UserManager(BaseUserManager):
-    def create_user(self, username, first_name, last_name, email, birthdate, address, phone_number, password=None):
+class CustomUserManager(BaseUserManager):
+    def create_user(self, username, email, password=None, **extra_fields):
         """
         Creates and saves a User with the given credential
         """
         if not username:
             raise ValueError('Users must have an username')
-        if not email:
-            raise ValueError('Users must have an email')
 
-        user = self.model(
-            user_name=username,
-            first_name=first_name,
-            last_name=last_name,
-            email=email,
-            birthdate=birthdate,
-            address=address,
-            phone_number=phone_number,
-            user_type=user_type,
-            auth_seed=random.randint(1, 999999999),
-        )
+        user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
         return  user
 
-    def create_admin(self, username, first_name, last_name, email, birthdate, address, phone_number, password=None):
+    def create_admin(self, username, email, password=None, **extra_fields):
         """
         Creates and saves a admin with the given credential
         """
-        user = self.create_user(
-        user_name=username,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        birthdate=birthdate,
-        address=address,
-        phone_number=phone_number,
-        is_staff=True,
-        password=password,
-        )
+        extra_fields.setdefault('is_staff', True)
+        user = self.model(username=username, email=email, **extra_fields)
         user.save(using=self._db)
         return user
 
