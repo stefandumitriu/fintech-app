@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class IonelConfig(AppConfig):
+class UserConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'ionel'
+    name = 'user'

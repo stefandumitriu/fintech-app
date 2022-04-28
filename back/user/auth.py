@@ -1,5 +1,6 @@
 from .models import CustomUser
 
+
 class UserAuthentication(object):
 	def authenticate(self, username=None, password=None):
 		try:
