@@ -36,10 +36,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     birthdate = models.DateTimeField(_('birthdate'), default=timezone.now)
     address = models.CharField(_('home address'), max_length=300, blank=True)
     phone_number = models.CharField(_('phone number'), max_length=12, unique=True)
-    is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='user_role')
     user_permissions = models.ManyToManyField(Permission, related_name='user_perm')
+    last_login = models.DateTimeField(default=timezone.now)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_name', 'first_name', 'last_name', 'phone_number']
@@ -53,11 +53,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.first_name
 
     def __str__(self):
-        return self.username
+        return self.user_name
 
-    @property
-    def is_staff(self):
-        return self.is_staff == True
 
 
 class Account(models.Model):
