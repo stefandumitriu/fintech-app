@@ -16,7 +16,7 @@ class CustomUserManager(BaseUserManager):
         user = self.model(username=username, email=email, **extra_fields)
         user.set_password(password)
         user.save(using=self._db)
-        return  user
+        return user
 
     def create_admin(self, username, email, password=None, **extra_fields):
         """
@@ -44,7 +44,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['user_name', 'first_name', 'last_name', 'phone_number']
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     def get_full_name(self):
         return self.first_name + ' ' + self.last_name
@@ -54,7 +54,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.user_name
-
 
 
 class Account(models.Model):
@@ -75,4 +74,6 @@ class Account(models.Model):
     currency = models.CharField(max_length=3)
     creation_time = models.DateTimeField('creation date', auto_now_add=True)
     last_updated_time = models.DateTimeField('last updated date', auto_now=True)
+
+    objects = models.Manager()
 

@@ -31,3 +31,30 @@ class CustomUserSerializer(serializers.Serializer):
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
+
+
+class AccountSerializer(serializers.Serializer):
+
+    iban = serializers.CharField(required=True, max_length=34)
+    acc_type = serializers.ChoiceField(
+        choices=Account.ACCOUNT_TYPE_CHOICES,
+        default=Account.CURRENT
+    )
+    #owner = serializers.ForeignKey(CustomUser)
+    balance = serializers.DecimalField(max_digits=20, decimal_places=6, default=0.0)
+    currency = serializers.CharField(required=True, max_length=3)
+    #creation_time = serializers.DateTimeField('creation date', auto_now_add=True)
+    #last_updated_time = serializers.DateTimeField('last updated date', auto_now=True)
+
+    def create(self, validated_data):
+        return Account.objects.create(**validated_data)
+
+    def update(self, instance: Account, validated_data):
+        instance.iban = validated_data.get('iban', instance.iban)
+        instance.acc_type = validated_data.get('acc_type', instance.acc_type)
+        #instance.owner = validated_data('owner', instance.owner)
+        instance.balance = validated_data('balance', instance.balance)
+        instance.currency = validated_data('currency', instance.currency)
+        instance.save()
+        return instance
+
