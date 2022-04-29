@@ -69,7 +69,7 @@ class Account(models.Model):
             choices=ACCOUNT_TYPE_CHOICES,
             default=CURRENT,
     )
-    # owner_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=20, decimal_places=6)
     currency = models.CharField(max_length=3)
     creation_time = models.DateTimeField('creation date', auto_now_add=True)

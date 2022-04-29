@@ -33,28 +33,33 @@ class CustomUserSerializer(serializers.Serializer):
         return instance
 
 
-class AccountSerializer(serializers.Serializer):
+class AccountSerializer(serializers.ModelSerializer):
 
-    iban = serializers.CharField(required=True, max_length=34)
-    acc_type = serializers.ChoiceField(
-        choices=Account.ACCOUNT_TYPE_CHOICES,
-        default=Account.CURRENT
-    )
-    # owner_id = serializers.PrimaryKeyRelatedField(source='CustomUser.id', queryset=CustomUser.objects.all(), required=True)
-    balance = serializers.DecimalField(max_digits=20, decimal_places=6, default=0.0)
-    currency = serializers.CharField(required=True, max_length=3)
+    # iban = serializers.CharField(required=True, max_length=34)
+    # acc_type = serializers.ChoiceField(
+    #     choices=Account.ACCOUNT_TYPE_CHOICES,
+    #     default=Account.CURRENT
+    # )
+    owner = serializers.SlugRelatedField(many=False, read_only=False, queryset=CustomUser.objects.all(),
+                                            slug_field="user_name")
+    # balance = serializers.DecimalField(max_digits=20, decimal_places=6, default=0.0)
+    # currency = serializers.CharField(required=True, max_length=3)
     #creation_time = serializers.DateTimeField('creation date', auto_now_add=True)
     #last_updated_time = serializers.DateTimeField('last updated date', auto_now=True)
 
-    def create(self, validated_data):
-        return Account.objects.create(**validated_data)
-
-    def update(self, instance: Account, validated_data):
-        instance.iban = validated_data.get('iban', instance.iban)
-        instance.acc_type = validated_data.get('acc_type', instance.acc_type)
-        # instance.owner_id = validated_data('owner_id', instance.owner_id.user_name)
-        instance.balance = validated_data('balance', instance.balance)
-        instance.currency = validated_data('currency', instance.currency)
-        instance.save()
-        return instance
+    class Meta:
+        model = Account
+        fields = ['iban', 'acc_type', 'owner', 'balance', 'currency']
+    #
+    # def create(self, validated_data):
+    #     return Account.objects.create(**validated_data)
+    #
+    # def update(self, instance: Account, validated_data):
+    #     instance.iban = validated_data.get('iban', instance.iban)
+    #     instance.acc_type = validated_data.get('acc_type', instance.acc_type)
+    #     # instance.owner_id = validated_data('owner_id', instance.owner_id.user_name)
+    #     instance.balance = validated_data('balance', instance.balance)
+    #     instance.currency = validated_data('currency', instance.currency)
+    #     instance.save()
+    #     return instance
 
