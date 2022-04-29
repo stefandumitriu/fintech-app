@@ -40,7 +40,7 @@ class AccountSerializer(serializers.Serializer):
         choices=Account.ACCOUNT_TYPE_CHOICES,
         default=Account.CURRENT
     )
-    #owner = serializers.ForeignKey(CustomUser)
+    # owner_id = serializers.PrimaryKeyRelatedField(source='CustomUser.id', queryset=CustomUser.objects.all(), required=True)
     balance = serializers.DecimalField(max_digits=20, decimal_places=6, default=0.0)
     currency = serializers.CharField(required=True, max_length=3)
     #creation_time = serializers.DateTimeField('creation date', auto_now_add=True)
@@ -52,7 +52,7 @@ class AccountSerializer(serializers.Serializer):
     def update(self, instance: Account, validated_data):
         instance.iban = validated_data.get('iban', instance.iban)
         instance.acc_type = validated_data.get('acc_type', instance.acc_type)
-        #instance.owner = validated_data('owner', instance.owner)
+        # instance.owner_id = validated_data('owner_id', instance.owner_id.user_name)
         instance.balance = validated_data('balance', instance.balance)
         instance.currency = validated_data('currency', instance.currency)
         instance.save()
