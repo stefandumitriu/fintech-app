@@ -125,7 +125,7 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserEmail) => setUserEmail(UserEmail)}
+              onChangeText={(userEmail) => setUserEmail(userEmail)}
               underlineColorAndroid="#f000"
               placeholder="Enter Email"
               placeholderTextColor="#8b9cb5"
@@ -141,9 +141,7 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserPassword) =>
-                setUserPassword(UserPassword)
-              }
+              onChangeText={(userPassword) => setUserPassword(userPassword)}
               underlineColorAndroid="#f000"
               placeholder="Enter Password"
               placeholderTextColor="#8b9cb5"
@@ -159,7 +157,7 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAge) => setUserAge(UserAge)}
+              onChangeText={(userAge) => setUserAge(userAge)}
               underlineColorAndroid="#f000"
               placeholder="Enter Age"
               placeholderTextColor="#8b9cb5"
@@ -175,7 +173,7 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAddress) => setUserAddress(UserAddress)}
+              onChangeText={(userAddress) => setUserAddress(userAddress)}
               underlineColorAndroid="#f000"
               placeholder="Enter Address"
               placeholderTextColor="#8b9cb5"
@@ -190,13 +188,13 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserPhoneNumber) => setUserPhoneNumber(userPhoneNumber)}
+              onChangeText={(userPhoneNumber) => setUserPhoneNumber(userPhoneNumber)}
               underlineColorAndroid="#f000"
               placeholder="Enter Phone Number"
               placeholderTextColor="#8b9cb5"
               keyboardType="numeric"
               ref={phoneNumberInputRef}
-              returnKeyType="next"
+              returnKeyType="done"
               onSubmitEditing={Keyboard.dismiss}
               blurOnSubmit={false}
             />
