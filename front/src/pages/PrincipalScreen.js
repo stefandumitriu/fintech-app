@@ -31,7 +31,12 @@ export default class PrincipalScreen extends React.Component {
             <>
                 <StatusBar backgroundColor='#7de24e'></StatusBar>
                 <View style={styles.container}>
-
+                    <TouchableOpacity
+                    style={styles.signOutButton}
+                    activeOpacity={0.5}
+                    onPress={() => this.props.navigation.replace('Auth')}>
+                    <FontAwesomeIcon name="home" size={30} style={{left: 4, top: 2}}></FontAwesomeIcon>
+                    </TouchableOpacity>
                     <View>
                         <Text style={styles.dashboardText}>Dashboard</Text> 
 
@@ -340,6 +345,17 @@ const styles = StyleSheet.create(
             top: "0.5%",
             right: "5%",
             borderRadius: 10,
-        }
+        },
+        signOutButton: {
+            position: 'absolute',
+            left: 10,
+            backgroundColor: '#7de24e',
+            color: '#ffffff',
+            borderColor: '#7de24e',
+            height: 35,
+            width: 35,
+            borderRadius: 30,
+            marginTop: 10,
+          },
     }
 );
