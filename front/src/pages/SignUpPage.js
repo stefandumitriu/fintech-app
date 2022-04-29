@@ -18,7 +18,7 @@ const SignUpPage = (props) => {
   const [userAge, setUserAge] = useState('');
   const [userAddress, setUserAddress] = useState('');
   const [userPassword, setUserPassword] = useState('');
-  const [userPhoneNumber, setPhoneNumber] = useState('');
+  const [userPhoneNumber, setUserPhoneNumber] = useState('');
   const [errortext, setErrortext] = useState('');
   const [isRegistrationSuccess, setIsRegistraionSuccess] = useState(false);
 
@@ -190,7 +190,7 @@ const SignUpPage = (props) => {
           <View style={styles.SectionStyle}>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(UserAge) => setUserPhoneNumber(userPhoneNumber)}
+              onChangeText={(UserPhoneNumber) => setUserPhoneNumber(userPhoneNumber)}
               underlineColorAndroid="#f000"
               placeholder="Enter Phone Number"
               placeholderTextColor="#8b9cb5"
