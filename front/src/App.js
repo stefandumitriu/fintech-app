@@ -6,6 +6,7 @@ import SplashScreen from './pages/SplashScreen';
 import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import PrincipalScreen from './pages/PrincipalScreen';
+import TransactionPage from './pages/TransactionPage';
 
 const Stack = createStackNavigator();
 
@@ -43,6 +44,11 @@ const Menu = () => {
         component={PrincipalScreen}
         options={{headerShown: false}}
       />
+      <Stack.Screen
+        name="TransactionPage"
+        component={TransactionPage}
+        options={{headerShown: false}}
+      />
     </Stack.Navigator>
   );
 };
@@ -70,5 +76,6 @@ const App = () => {
     </NavigationContainer>
   );
 };
+
 
 export default App;

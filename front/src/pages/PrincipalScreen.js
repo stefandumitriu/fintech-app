@@ -6,6 +6,7 @@ import FontistoIcons from 'react-native-vector-icons/Fontisto';
 import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
 import testJsonFile from '../data.json';
+
 export default class PrincipalScreen extends React.Component {
 
     constructor(props) {
@@ -32,10 +33,10 @@ export default class PrincipalScreen extends React.Component {
                 <StatusBar backgroundColor='#7de24e'></StatusBar>
                 <View style={styles.container}>
                     <TouchableOpacity
-                    style={styles.signOutButton}
-                    activeOpacity={0.5}
-                    onPress={() => this.props.navigation.replace('Auth')}>
-                    <FontAwesomeIcon name="home" size={30} style={{left: 4, top: 2}}></FontAwesomeIcon>
+                        style={styles.signOutButton}
+                        activeOpacity={0.5}
+                        onPress={() => this.props.navigation.replace('Auth')}>
+                        <FontAwesomeIcon name="home" size={30} style={{left: 4, top: 2}}></FontAwesomeIcon>
                     </TouchableOpacity>
                     <View>
                         <Text style={styles.dashboardText}>Dashboard</Text> 
@@ -48,85 +49,88 @@ export default class PrincipalScreen extends React.Component {
                             </View>
 
                             <Text style = {styles.amountText}>
-                                {currency}69.69
+                                {currency}69420.69
                             </Text>
 
                         </View> 
 
-                        <View style = {styles.recentTransactions}>
-                            <Text style = {styles.recentTransactionTitle}>
-                                    Recent Transactions
-                            </Text>
-
-                            {/* Recent transactions */}
-                            <View >
-                                <Image style = {{
-                                            top: "30%",
-                                            left: "3%",
-                                            borderRadius: 20
-                                        }} 
-                                        source={{width:35, height:35, uri: 'https://picsum.photos/200'}}
-                                ></Image>
-                                <Image style = {{
-                                            top: "60%",
-                                            left: "3%",
-                                            borderRadius: 20
-                                        }} 
-                                        source={{width:35, height:35, uri: 'https://picsum.photos/200'}}></Image>
-                            </View>
-
-                            <View >
-                                <Text 
-                                    style = {{
-                                        fontSize: 15,
-                                        fontWeight: "bold",
-                                        alignSelf: 'center',
-                                        top: "-100%",
-                                        left: "-5%"
-                                    }}
-                                >
-                                        To: GabrielP
-                                </Text>
-                                <Text 
-                                    style = {{
-                                        fontSize: 15,
-                                        fontWeight: "bold",
-                                        alignSelf: 'center',
-                                        top: "-18%",
-                                        left: "-5%"
-                                    }}
-                                >
-                                        From: GabrielI
-                                </Text>
-                            </View>
-
-                            <View>
-                                <Text 
-                                    style = {{
-                                        fontSize: 15,
-                                        fontWeight: "bold",
-                                        alignSelf: 'center',
-                                        top: "-203%",
-                                        left: "35%"
-                                    }}
-                                >
-                                        RON 6.9
+                        {/* Recent transactions. Press the white slide*/}
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('TransactionPage')}>
+                            <View style = {styles.recentTransactions}>
+                                <Text style = {styles.recentTransactionTitle}>
+                                        Recent Transactions
                                 </Text>
 
-                                <Text 
-                                    style = {{
-                                        fontSize: 15,
-                                        fontWeight: "bold",
-                                        alignSelf: 'center',
-                                        top: "-120%",
-                                        left: "35%"
-                                    }}
-                                >
-                                        RON 6.9
-                                </Text>
-                            </View>
-                            
-                        </View> 
+                                <View >
+                                    <Image style = {{
+                                                top: "30%",
+                                                left: "3%",
+                                                borderRadius: 20
+                                            }} 
+                                            source={{width:35, height:35, uri: 'https://picsum.photos/200'}}
+                                    ></Image>
+                                    <Image style = {{
+                                                top: "60%",
+                                                left: "3%",
+                                                borderRadius: 20
+                                            }} 
+                                            source={{width:35, height:35, uri: 'https://picsum.photos/200'}}></Image>
+                                </View>
+
+                                <View >
+                                    <Text 
+                                        style = {{
+                                            fontSize: 15,
+                                            fontWeight: "bold",
+                                            alignSelf: 'center',
+                                            top: "-100%",
+                                            left: "-5%"
+                                        }}
+                                    >
+                                            To: GabrielP
+                                    </Text>
+                                    <Text 
+                                        style = {{
+                                            fontSize: 15,
+                                            fontWeight: "bold",
+                                            alignSelf: 'center',
+                                            top: "-18%",
+                                            left: "-5%"
+                                        }}
+                                    >
+                                            From: GabrielI
+                                    </Text>
+                                </View>
+
+                                <View>
+                                    <Text 
+                                        style = {{
+                                            fontSize: 15,
+                                            fontWeight: "bold",
+                                            alignSelf: 'center',
+                                            top: "-203%",
+                                            left: "35%"
+                                        }}
+                                    >
+                                            RON 6.9
+                                    </Text>
+
+                                    <Text 
+                                        style = {{
+                                            fontSize: 15,
+                                            fontWeight: "bold",
+                                            alignSelf: 'center',
+                                            top: "-120%",
+                                            left: "35%"
+                                        }}
+                                    >
+                                            RON 6.9
+                                    </Text>
+                                </View>
+                                
+                            </View> 
+                        </TouchableOpacity>
+                        
 
                         {/* Overall balance */}
                         <View style = {styles.overallBalance}>
