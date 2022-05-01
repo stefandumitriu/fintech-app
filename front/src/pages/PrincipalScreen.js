@@ -176,7 +176,7 @@ export default class PrincipalScreen extends React.Component {
                     </View>
 
                     <View style={styles.stocksButton}>
-                        <TouchableOpacity onPress={() => alert("Stocks button pressed!")}>
+                        <TouchableOpacity onPress={() => this.props.navigation.replace('Stocks')}>
                             <FeatherIcons name="trending-up" size={40} style={{left: 5, top: 3}}></FeatherIcons>
                         </TouchableOpacity>
                     </View>

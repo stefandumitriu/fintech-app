@@ -7,6 +7,8 @@ import LoginPage from './pages/LoginPage';
 import SignUpPage from './pages/SignUpPage';
 import PrincipalScreen from './pages/PrincipalScreen';
 import TransactionPage from './pages/TransactionPage';
+import StocksPortofolioPage from './pages/StocksPortofolioPage';
+import StocksDetailsPage from './pages/StocksDetailsPage';
 
 const Stack = createStackNavigator();
 
@@ -31,6 +33,23 @@ const Auth = () => {
             fontWeight: 'bold',
           },
         }}
+      />
+    </Stack.Navigator>
+  );
+};
+
+const Stocks = () => {
+  return (
+    <Stack.Navigator initialRouteName="StocksPortofolioPage">
+      <Stack.Screen
+        name="StocksPortofolioPage"
+        component={StocksPortofolioPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="StocksDetailsPage"
+        component={StocksDetailsPage}
+        options={{headerShown: false}}
       />
     </Stack.Navigator>
   );
@@ -70,6 +89,11 @@ const App = () => {
         <Stack.Screen
           name="Menu"
           component={Menu}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="Stocks"
+          component={Stocks}
           options={{headerShown: false}}
         />
       </Stack.Navigator>
