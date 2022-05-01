@@ -10,29 +10,27 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import { Entypo as Icon } from '@expo/vector-icons';
 
 const LoginScreen = ({navigation}) => {
-  const [userEmail, setUserEmail] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [errortext, setErrortext] = useState('');
-
   const passwordInputRef = createRef();
 
-  const handleSubmitPress = () => {
-    setErrortext('');
-    if (!userEmail) {
-      alert('Please fill Email');
-      return;
-    }
-    if (!userPassword) {
-      alert('Please fill Password');
-      return;
-    }
-    else {
-      navigation.replace('Menu');
-    }
-  };
+  const LoginSchema = Yup.object().shape({
+    email: Yup.string().email('Invalid email').required('Required'),
+    password: Yup.string()
+      .min(6, 'Too Short!')
+      .max(16, 'Too Long!')
+      .required('Required')
+  });
 
+  const formik = useFormik({
+    validationSchema: LoginSchema,
+    initialValues: { email: '', password: '' },
+    onSubmit: () => navigation.replace('Menu'),
+  });
+  
   return (
     <View style={styles.mainBody}>
       <StatusBar
@@ -48,11 +46,17 @@ const LoginScreen = ({navigation}) => {
         <View>
           <KeyboardAvoidingView enabled>
             <View style={styles.SectionStyle}>
+              <View style={styles.IconStyle}>
+                {formik.touched.email && formik.errors.email ? 
+                  (<Icon name={'mail'} color='#ff292f' size={16} />) : 
+                  (<Icon name={'mail'} color='#223e4b' size={16} />)}
+              </View>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={(UserEmail) =>
-                  setUserEmail(UserEmail)
-                }
+                onChangeText={formik.handleChange('email')}
+                onBlur={formik.handleBlur('email')}
+                errors={formik.errors.email}
+                touched={formik.touched.email}
                 placeholder="Enter Email"
                 placeholderTextColor="#8b9cb5"
                 autoCapitalize="none"
@@ -67,11 +71,17 @@ const LoginScreen = ({navigation}) => {
               />
             </View>
             <View style={styles.SectionStyle}>
+              <View style={styles.IconStyle}>
+              {formik.touched.password && formik.errors.password ? 
+                  (<Icon name={'key'} color='#ff292f' size={16} />) : 
+                  (<Icon name={'key'} color='#223e4b' size={16} />)}
+              </View>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={(UserPassword) =>
-                  setUserPassword(UserPassword)
-                }
+                onChangeText={formik.handleChange('password')}
+                onBlur={formik.handleBlur('password')}
+                errors={formik.errors.password}
+                touched={formik.touched.password}
                 placeholder="Enter Password"
                 placeholderTextColor="#8b9cb5"
                 keyboardType="default"
@@ -83,15 +93,10 @@ const LoginScreen = ({navigation}) => {
                 returnKeyType="done"
               />
             </View>
-            {errortext != '' ? (
-              <Text style={styles.errorTextStyle}>
-                {errortext}
-              </Text>
-            ) : null}
             <TouchableOpacity
               style={styles.buttonStyle}
               activeOpacity={0.5}
-              onPress={handleSubmitPress}>
+              onPress={formik.handleSubmit}>
               <Text 
                 style={styles.buttonTextStyle}>
                 LOGIN
@@ -124,6 +129,9 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     margin: 10,
+  },
+  IconStyle: {
+    padding: 10,
   },
   buttonStyle: {
     backgroundColor: '#7de24e',
@@ -158,10 +166,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     alignSelf: 'center',
     padding: 10,
-  },
-  errorTextStyle: {
-    color: 'red',
-    textAlign: 'center',
-    fontSize: 14,
   },
 });
