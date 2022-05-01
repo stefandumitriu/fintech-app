@@ -4,24 +4,16 @@ import {
   TextInput,
   View,
   Text,
-  Image,
   KeyboardAvoidingView,
   Keyboard,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import { Entypo as Icon } from '@expo/vector-icons';
 
-const SignUpPage = (props) => {
-  const [userName, setUserName] = useState('');
-  const [userSurname, setUserSurname] = useState('');
-  const [userEmail, setUserEmail] = useState('');
-  const [userAge, setUserAge] = useState('');
-  const [userAddress, setUserAddress] = useState('');
-  const [userPassword, setUserPassword] = useState('');
-  const [userPhoneNumber, setUserPhoneNumber] = useState('');
-  const [errortext, setErrortext] = useState('');
-  const [isRegistrationSuccess, setIsRegistraionSuccess] = useState(false);
-
+const SignUpPage = ({navigation}) => {
   const surnameInputRef = createRef();
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
@@ -29,58 +21,32 @@ const SignUpPage = (props) => {
   const addressInputRef = createRef();
   const phoneNumberInputRef = createRef();
 
-  const handleSubmitButton = () => {
-    setErrortext('');
-    if (!userName) {
-      alert('Please fill Name');
-      return;
-    }
-    if (!userSurname) {
-      alert('Please fill Surname');
-      return;
-    }
-    if (!userEmail) {
-      alert('Please fill Email');
-      return;
-    }
-    if (!userPassword) {
-      alert('Please fill Password');
-      return;
-    }
-    if (!userAge) {
-      alert('Please fill Age');
-      return;
-    }
-    if (!userAddress) {
-      alert('Please fill Address');
-      return;
-    }
-    if (!userPhoneNumber) {
-      alert('Please fill Phone Number');
-      return;
-    }
-  };
+  const SignUpSchema = Yup.object().shape({
+    name: Yup.string().required('Required'),
+    surname: Yup.string().required('Required'),
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Required'),
+    password: Yup.string()
+      .min(6, 'Too Short!')
+      .required('Required'),
+    age: Yup.number()
+      .positive('Must be a positive number')
+      .integer('Must be an integer')
+      .required('Required'),
+    address: Yup.string()
+      .required('Required'),
+    phoneNumber: Yup.number()
+      .integer('Must be an integer')
+      .positive('Must be a positive number')
+      .required('Required'),
+  });
 
-  if (isRegistrationSuccess) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: '#307ecc',
-          justifyContent: 'center',
-        }}>
-        <Text style={styles.successTextStyle}>
-          Registration Successful
-        </Text>
-        <TouchableOpacity
-          style={styles.buttonStyle}
-          activeOpacity={0.5}
-          onPress={() => props.navigation.navigate('LoginPage')}>
-          <Text style={styles.buttonTextStyle}>Login Now</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+  const formik = useFormik({
+    validationSchema: SignUpSchema,
+    initialValues: { name: '', surname: '', email: '', password: '', age: '', address: '', phoneNumber: '' },
+    onSubmit: () => navigation.navigate('LoginPage'),
+  });
 
   return (
     <View style={{flex: 1, backgroundColor: '#f0efed'}}>
@@ -92,9 +58,17 @@ const SignUpPage = (props) => {
         }}>
         <KeyboardAvoidingView enabled>
           <View style={styles.NameSectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.name && formik.errors.name ? 
+                (<Icon name={'users'} color='#ff292f' size={16} />) : 
+                (<Icon name={'users'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userName) => setUserName(userName)}
+              onChangeText={formik.handleChange('name')}
+              onBlur={formik.handleBlur('name')}
+              errors={formik.errors.name}
+              touched={formik.touched.name}
               underlineColorAndroid="#f000"
               placeholder="Enter Name"
               placeholderTextColor="#8b9cb5"
@@ -107,9 +81,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SurnameSectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.surname && formik.errors.surname ? 
+                (<Icon name={'user'} color='#ff292f' size={16} />) : 
+                (<Icon name={'user'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userSurname) => setUserSurname(userSurname)}
+              onChangeText={formik.handleChange('surname')}
+              onBlur={formik.handleBlur('surnmae')}
+              errors={formik.errors.surname}
+              touched={formik.touched.surname}
               underlineColorAndroid="#f000"
               placeholder="Enter Surname"
               placeholderTextColor="#8b9cb5"
@@ -123,9 +105,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.email && formik.errors.email ? 
+                (<Icon name={'mail'} color='#ff292f' size={16} />) : 
+                (<Icon name={'mail'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userEmail) => setUserEmail(userEmail)}
+              onChangeText={formik.handleChange('email')}
+              onBlur={formik.handleBlur('email')}
+              errors={formik.errors.email}
+              touched={formik.touched.email}
               underlineColorAndroid="#f000"
               placeholder="Enter Email"
               placeholderTextColor="#8b9cb5"
@@ -139,9 +129,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.password && formik.errors.password ? 
+                (<Icon name={'key'} color='#ff292f' size={16} />) : 
+                (<Icon name={'key'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userPassword) => setUserPassword(userPassword)}
+              onChangeText={formik.handleChange('password')}
+              onBlur={formik.handleBlur('password')}
+              errors={formik.errors.password}
+              touched={formik.touched.password}
               underlineColorAndroid="#f000"
               placeholder="Enter Password"
               placeholderTextColor="#8b9cb5"
@@ -155,9 +153,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.age && formik.errors.age ? 
+                (<Icon name={'calendar'} color='#ff292f' size={16} />) : 
+                (<Icon name={'calendar'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userAge) => setUserAge(userAge)}
+              onChangeText={formik.handleChange('age')}
+              onBlur={formik.handleBlur('age')}
+              errors={formik.errors.age}
+              touched={formik.touched.age}
               underlineColorAndroid="#f000"
               placeholder="Enter Age"
               placeholderTextColor="#8b9cb5"
@@ -171,9 +177,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.address && formik.errors.address ? 
+                (<Icon name={'address'} color='#ff292f' size={16} />) : 
+                (<Icon name={'address'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userAddress) => setUserAddress(userAddress)}
+              onChangeText={formik.handleChange('address')}
+              onBlur={formik.handleBlur('address')}
+              errors={formik.errors.address}
+              touched={formik.touched.address}
               underlineColorAndroid="#f000"
               placeholder="Enter Address"
               placeholderTextColor="#8b9cb5"
@@ -186,9 +200,17 @@ const SignUpPage = (props) => {
             />
           </View>
           <View style={styles.SectionStyle}>
+            <View style={styles.IconStyle}>
+              {formik.touched.phoneNumber && formik.errors.phoneNumber ? 
+                (<Icon name={'old-phone'} color='#ff292f' size={16} />) : 
+                (<Icon name={'old-phone'} color='#223e4b' size={16} />)}
+            </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={(userPhoneNumber) => setUserPhoneNumber(userPhoneNumber)}
+              onChangeText={formik.handleChange('phoneNumber')}
+              onBlur={formik.handleBlur('phoneNumber')}
+              errors={formik.errors.phoneNumber}
+              touched={formik.touched.phoneNumber}
               underlineColorAndroid="#f000"
               placeholder="Enter Phone Number"
               placeholderTextColor="#8b9cb5"
@@ -199,15 +221,10 @@ const SignUpPage = (props) => {
               blurOnSubmit={false}
             />
           </View>
-          {errortext != '' ? (
-            <Text style={styles.errorTextStyle}>
-              {errortext}
-            </Text>
-          ) : null}
           <TouchableOpacity
             style={styles.buttonStyle}
             activeOpacity={0.5}
-            onPress={handleSubmitButton}>
+            onPress={formik.handleSubmit}>
             <Text style={styles.buttonTextStyle}>REGISTER</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>
@@ -241,6 +258,9 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     marginRight: 35,
     margin: 10,
+  },
+  IconStyle: {
+    padding: 10,
   },
   buttonStyle: {
     backgroundColor: '#7de24e',
