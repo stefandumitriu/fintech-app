@@ -41,8 +41,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     user_permissions = models.ManyToManyField(Permission, related_name='user_perm')
     last_login = models.DateTimeField(default=timezone.now)
 
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['user_name', 'first_name', 'last_name', 'phone_number']
+    USERNAME_FIELD = 'user_name'
+    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'phone_number']
 
     objects = CustomUserManager()
 

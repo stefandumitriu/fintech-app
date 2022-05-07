@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import authentication, status
@@ -65,22 +64,6 @@ class AccountView(APIView):
         return Response({"error": serializer.errors,
                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
 
-# @csrf_exempt
-# def account_list(req):
-#     if req.method == 'GET':
-#         accounts = Account.objects.all()
-#         serializer = AccountSerializer(accounts, many=True)
-#         return JsonResponse(serializer.data, safe=False)
-#
-#     elif req.method == 'POST':
-#         data = JSONParser().parse(req)
-#         serializer = AccountSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return JsonResponse(serializer.data, status=201)
-#         return JsonResponse(serializer.data, status=400)
-
-
 @csrf_exempt
 def login_request(req):
     data = JSONParser().parse(req)
@@ -89,7 +72,6 @@ def login_request(req):
     user = authenticate(username=user_name, password=password)
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
-        print(str(token.key))
         return JsonResponse({"token": token.key})
     else:
         return HttpResponse("Login failed", status=400)
