@@ -1,6 +1,8 @@
 import json
 
-from rest_framework import viewsets, authentication
+from django.core import serializers
+from rest_framework import viewsets, authentication, status
+from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -61,6 +63,29 @@ class StockListViewSet(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        stocks = Stock.objects.all()
-        serializer = StockSerializer(stocks, many=True)
+        stock_list = Stock.objects.all()
+        serializer = StockSerializer(stock_list, many=True)
         return Response(serializer.data)
+
+@api_view(['GET'])
+def stock_detail(request, symbol):
+
+    stock = Stock.objects.get(symbol=symbol.upper())
+    if stock is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = StockSerializer(stock)
+        return Response(serializer.data)
+
+@api_view(['GET'])
+def stock_name_filter(request):
+
+    if request.method == 'GET':
+        param = request.GET.get('q', None)
+        if param is not None:
+            queryresult = Stock.objects.filter(name__contains=param)
+            serializer = serializers.serialize("json", queryresult, fields=('name', 'symbol', 'exchange_name'))
+            json_obj = json.loads(serializer)
+            return Response(json_obj)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

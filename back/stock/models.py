@@ -16,4 +16,6 @@ class Stock(models.Model):
     market_change_percent = models.FloatField()
     market_cap = models.BigIntegerField()
 
+    objects = models.Manager()
+
 
