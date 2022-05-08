@@ -1,6 +1,7 @@
 from django.http import HttpResponse, JsonResponse
+from django.utils import timezone, dateformat
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework import authentication, status
+from rest_framework import authentication, status, permissions
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
@@ -11,13 +12,20 @@ from .models import CustomUser, Account
 from .serializers import CustomUserSerializer, AccountSerializer
 from .auth import authenticate
 from rest_framework.authtoken.models import Token
+from rest_condition import And, Or, Not
+
 
 # Create your views here.
 
 
+class IsPostRequest(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.method == 'POST'
+
+
 class UserView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [Or(IsPostRequest, IsAuthenticated)]
 
     def get(self, request):
         users = CustomUser.objects.all()
@@ -31,12 +39,11 @@ class UserView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response({"error": serializer.errors,
-                        "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
 
 
 @api_view(['GET'])
 def user_detail(request, phone):
-
     user = CustomUser.objects.get(phone_number=phone)
     if user is None:
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -62,16 +69,19 @@ class AccountView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response({"error": serializer.errors,
-                        "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+
 
 @csrf_exempt
 def login_request(req):
     data = JSONParser().parse(req)
-    user_name = data['user_name']
+    phone_number = data['phone_number']
     password = data['password']
-    user = authenticate(username=user_name, password=password)
+    user = authenticate(phone_number=phone_number, password=password)
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
+        user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+        user.save()
         return JsonResponse({"token": token.key})
     else:
         return HttpResponse("Login failed", status=400)

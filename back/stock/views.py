@@ -67,6 +67,7 @@ class StockListViewSet(APIView):
         serializer = StockSerializer(stock_list, many=True)
         return Response(serializer.data)
 
+
 @api_view(['GET'])
 def stock_detail(request, symbol):
 
@@ -77,6 +78,7 @@ def stock_detail(request, symbol):
     if request.method == 'GET':
         serializer = StockSerializer(stock)
         return Response(serializer.data)
+
 
 @api_view(['GET'])
 def stock_name_filter(request):

@@ -5,46 +5,22 @@ from django.utils import timezone
 from django.db import models
 
 
-class CustomUserManager(BaseUserManager):
-    def create_user(self, username, email, password=None, **extra_fields):
-        """
-        Creates and saves a User with the given credential
-        """
-        if not username:
-            raise ValueError('Users must have an username')
-
-        user = self.model(username=username, email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_admin(self, username, email, password=None, **extra_fields):
-        """
-        Creates and saves a admin with the given credential
-        """
-        extra_fields.setdefault('is_staff', True)
-        user = self.model(username=username, email=email, **extra_fields)
-        user.save(using=self._db)
-        return user
-
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
-    user_name = models.CharField(_('username'), max_length=50, unique=True)
     email = models.EmailField(_('email address'), unique=True)
     first_name = models.CharField(_('first name'), max_length=150)
     last_name = models.CharField(_('last name'), max_length=150)
-    birthdate = models.DateTimeField(_('birthdate'), default=timezone.now)
+    age = models.IntegerField(_('age'))
     address = models.CharField(_('home address'), max_length=300, blank=True)
-    phone_number = models.CharField(_('phone number'), max_length=12, unique=True)
+    phone_number = models.CharField(_('phone number'), max_length=12, unique=True, blank=False)
     is_active = models.BooleanField(default=False)
     groups = models.ManyToManyField(Group, related_name='user_role')
     user_permissions = models.ManyToManyField(Permission, related_name='user_perm')
     last_login = models.DateTimeField(default=timezone.now)
 
-    USERNAME_FIELD = 'user_name'
-    REQUIRED_FIELDS = ['email', 'first_name', 'last_name', 'phone_number']
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = ['first_name', 'last_name', 'email']
 
-    objects = CustomUserManager()
+    objects = models.Manager()
 
     def get_full_name(self):
         return self.first_name + ' ' + self.last_name
@@ -53,7 +29,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.first_name
 
     def __str__(self):
-        return self.user_name
+        return self.email
 
 
 class Account(models.Model):
