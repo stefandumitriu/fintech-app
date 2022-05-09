@@ -18,7 +18,10 @@ const LoginScreen = ({navigation}) => {
   const passwordInputRef = createRef();
 
   const LoginSchema = Yup.object().shape({
-    email: Yup.string().email('Invalid email').required('Required'),
+    phoneNumber: Yup.number()
+      .integer('Must be an integer')
+      .positive('Must be a positive number')
+      .required('Required'),
     password: Yup.string()
       .min(6, 'Too Short!')
       .required('Required')
@@ -26,7 +29,7 @@ const LoginScreen = ({navigation}) => {
 
   const formik = useFormik({
     validationSchema: LoginSchema,
-    initialValues: { email: '', password: '' },
+    initialValues: { phoneNumber: '', password: '' },
     onSubmit: () => navigation.replace('Menu'),
   });
   
@@ -46,20 +49,19 @@ const LoginScreen = ({navigation}) => {
           <KeyboardAvoidingView enabled>
             <View style={styles.SectionStyle}>
               <View style={styles.IconStyle}>
-                {formik.touched.email && formik.errors.email ? 
-                  (<Icon name={'mail'} color='#ff292f' size={16} />) : 
-                  (<Icon name={'mail'} color='#223e4b' size={16} />)}
+                {formik.touched.phoneNumber && formik.errors.phoneNumber ? 
+                  (<Icon name={'old-phone'} color='#ff292f' size={16} />) : 
+                  (<Icon name={'old-phone'} color='#223e4b' size={16} />)}
               </View>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={formik.handleChange('email')}
-                onBlur={formik.handleBlur('email')}
-                errors={formik.errors.email}
-                touched={formik.touched.email}
-                placeholder="Enter Email"
+                onChangeText={formik.handleChange('phoneNumber')}
+                onBlur={formik.handleBlur('phoneNumber')}
+                errors={formik.errors.phoneNumber}
+                touched={formik.touched.phoneNumber}
+                placeholder="Enter Phone Number"
                 placeholderTextColor="#8b9cb5"
-                autoCapitalize="none"
-                keyboardType="email-address"
+                keyboardType="numeric"
                 returnKeyType="next"
                 onSubmitEditing={() =>
                   passwordInputRef.current &&
