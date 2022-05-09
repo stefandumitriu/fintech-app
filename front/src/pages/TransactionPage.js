@@ -1,83 +1,82 @@
 import React, {Component} from 'react';
 import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
+import axios from 'axios';
 
+const baseUrl = 'http://10.0.2.2:8000';
+const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
 // Tested to print transactions depending on an array
 export default class TransactionPage extends React.Component {
     
     constructor(props) {
         super(props);
         this.state = {
+            recentTransactions: null,
             isLoading: true,
-            dataSource: null,
-            counters: [1, 2, 3]
+        }
+    }
+
+    async getRecentTransactions() {
+        try {
+            const url = `${baseUrl}/transactions/`
+            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
+            this.setState({
+                recentTransactions: response.data
+            });
+            console.log(this.state.recentTransactions);
+        } catch (error) {
+            console.error(error);
         }
     }
 
     componentDidMount() {
-
-        return fetch('http://10.0.2.2:3000/recent_transactions')
-            .then( (response) => response.json())
-            .then( (responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    dataSource: responseJson,
-                })
-            })
-            .catch((error) => {console.log(error)});
+        this.getRecentTransactions();
     }
+
     list() {
-        return this.state.dataSource.map( (recentTransaction) => {
+        return this.state.recentTransactions && this.state.recentTransactions.map( (recentTransaction, i) => {
                 var currency = '';
                 if (recentTransaction.currency === 'RON')
                     currency = "RON";
                 else if (recentTransaction.currency === 'EUR')
                     currency = '\u20AC';
 
-                if (recentTransaction.this_sent === true) {
+                //if (recentTransaction.this_sent === true) {
                     return (
-                        <View key={recentTransaction.id}>
+                        <View key={i}>
                             <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
-                                To: {recentTransaction.who}
+                                To: {recentTransaction.receiver}
                             </Text>
                             <Text style={styles.amount}>
                                 - {currency} {recentTransaction.amount}
                             </Text>
                         </View>
                     );
-                } else {
-                    return (
-                        <View key={recentTransaction.id}>
-                            <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
-                            <Text style={styles.userText}>
-                                From: {recentTransaction.who}
-                            </Text>
-                            <Text style={styles.amount}>
-                                {currency} {recentTransaction.amount}
-                            </Text>
-                        </View>
-                    );
-                }
+                // } else {
+                //     return (
+                //         <View key={recentTransaction.id}>
+                //             <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
+                //             <Text style={styles.userText}>
+                //                 From: {recentTransaction.who}
+                //             </Text>
+                //             <Text style={styles.amount}>
+                //                 {currency} {recentTransaction.amount}
+                //             </Text>
+                //         </View>
+                //     );
+                // }
             }
         );
     }
 
     render() {
-        if (this.state.isLoading) {
-            return (
-                <View>
-                    <ActivityIndicator/>
-                </View>
-            )
-        } else {
-            return (
-                <View>
-                    {this.list()}
-                </View>
-                
-            );
-        }
+        return (
+            <View>
+                {this.list()}
+            </View>
+            
+        );
     }
 }
 

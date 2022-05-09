@@ -12,26 +12,64 @@ export default class PrincipalScreen extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isLoading: true,
-            dataSource: null,
+            isLoadingCA: true,
+            currentAccount: null,
+            recentTransactions: null,
+            isLoadingRT: true,
+        }
+    }
+
+    async getCurrentAccount() {
+        try {
+            const response = await
+                fetch('http://10.0.2.2:3000/current_account');
+            const jsonResponse = await response.json();
+            this.setState({
+                currentAccount: jsonResponse 
+            });
+        } catch(error) {
+            console.log(error);
+        } finally {
+            this.setState({
+                isLoadingCA: false
+            });
+        }
+    }
+
+    async getRecentTransactions() {
+        try {
+            const response = await
+                fetch('http://10.0.2.2:3000/recent_transactions');
+            const jsonResponse = await response.json();
+            this.setState({
+                recentTransactions: jsonResponse 
+            });
+        } catch(error) {
+            console.log(error);
+        } finally {
+            this.setState({
+                isLoadingRT: false
+            });
         }
     }
 
     componentDidMount() {
 
-        return fetch('http://10.0.2.2:3000/current_account')
-            .then( (response) => response.json())
-            .then( (responseJson) => {
-                this.setState({
-                    isLoading: false,
-                    dataSource: responseJson,
-                })
-            })
-            .catch((error) => {console.log(error)});
+        // return fetch('http://10.0.2.2:3000/current_account')
+        //     .then( (response) => response.json())
+        //     .then( (responseJson) => {
+        //         this.setState({
+        //             isLoading: false,
+        //             currentAccount: responseJson,
+        //         })
+        //     })
+        //     .catch((error) => {console.log(error)});
+        this.getCurrentAccount();
+        this.getRecentTransactions();
     }
 
     render() {
-        if (this.state.isLoading) {
+        if (this.state.isLoadingCA == true || this.state.isLoadingRT == true) {
             return (
                 <View>
                     <ActivityIndicator/>
@@ -40,11 +78,11 @@ export default class PrincipalScreen extends React.Component {
         } else {
             let flag = '';
             let currency = '';
-            if (this.state.dataSource[0].currency === 'lei') {
+            if (this.state.currentAccount[0].currency === 'RON') {
                 flag = 'romania';
                 currency = 'RON';
             }
-            else if (this.state.dataSource[0].currency === 'euro') {
+            else if (this.state.currentAccount[0].currency === 'EUR') {
                 flag = "european-union";
                 currency = '\u20AC';
             }
@@ -69,7 +107,7 @@ export default class PrincipalScreen extends React.Component {
                                 </View>
 
                                 <Text style = {styles.amountText}>
-                                    {currency}{this.state.dataSource[0].cash}
+                                    {currency}{this.state.currentAccount[0].cash}
                                 </Text>
 
                             </View> 
@@ -174,13 +212,13 @@ export default class PrincipalScreen extends React.Component {
 
                                 <View style={{top: "-28%", left: "10%"}}>
                                     <Text style = {styles.amountOverallBalanceCash}>
-                                        {currency}{this.state.dataSource[0].cash}
+                                        {currency}{this.state.currentAccount[0].cash}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceStocks}>
-                                            {currency}{this.state.dataSource[0].stocks}
+                                            {currency}{this.state.currentAccount[0].stocks}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceSafe}>
-                                        {currency}{this.state.dataSource[0].safe}
+                                        {currency}{this.state.currentAccount[0].safe}
                                     </Text>
                                 </View>
                             </View>
