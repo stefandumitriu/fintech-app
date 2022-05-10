@@ -9,6 +9,7 @@ import PrincipalScreen from './pages/PrincipalScreen';
 import TransactionPage from './pages/TransactionPage';
 import StocksPortofolioPage from './pages/StocksPortofolioPage';
 import StocksDetailsPage from './pages/StocksDetailsPage';
+import WalletPage from './pages/WalletPage';
 
 const Stack = createStackNavigator();
 
@@ -66,6 +67,11 @@ const Menu = () => {
       <Stack.Screen
         name="TransactionPage"
         component={TransactionPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="WalletPage"
+        component={WalletPage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

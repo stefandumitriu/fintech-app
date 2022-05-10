@@ -21,6 +21,7 @@
     "react-dom": "17.0.1",
     "react-icons": "^4.3.1",
     "react-native": "0.64.3",
+    "react-native-cards-slider": "^0.1.2",
     "react-native-gesture-handler": "~2.1.0",
     "react-native-ico-flags": "^3.3.1",
     "react-native-svg": "^12.1.1",

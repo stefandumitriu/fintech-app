@@ -7,7 +7,6 @@ import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
 import axios from 'axios';
 
-
 const baseUrl = 'http://10.0.2.2:8000';
 const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
 const email = 'laurentiu@gmail.com';
@@ -261,7 +260,7 @@ export default class PrincipalScreen extends React.Component {
                         </View>
 
                         <View style={styles.walletButton}>
-                            <TouchableOpacity onPress={() => alert("Wallet button pressed!")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('WalletPage')}>
                                 <FontistoIcons name="wallet" size={35} style={{left: 5, top: 5}}></FontistoIcons>
                             </TouchableOpacity>
                         </View>

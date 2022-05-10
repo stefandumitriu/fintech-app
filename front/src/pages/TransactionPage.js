@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import { StyleSheet, View, ActivityIndicator, Text } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
 
@@ -76,9 +76,9 @@ export default class TransactionPage extends React.Component {
 
     render() {
         return (
-            <View>
+            <ScrollView>
                 {this.list()}
-            </View>
+            </ScrollView>
             
         );
     }

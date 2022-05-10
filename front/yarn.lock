@@ -4757,6 +4757,11 @@
   "resolved" "https://registry.npmjs.org/react-is/-/react-is-17.0.2.tgz"
   "version" "17.0.2"
 
+"react-native-cards-slider@^0.1.2":
+  "integrity" "sha1-ITSJxIBkkpp+dqwOk1LLYKWb/QM="
+  "resolved" "https://registry.npmjs.org/react-native-cards-slider/-/react-native-cards-slider-0.1.2.tgz"
+  "version" "0.1.2"
+
 "react-native-codegen@^0.0.6":
   "integrity" "sha512-cMvrUelD81wiPitEPiwE/TCNscIVauXxmt4NTGcy18HrUd0WRWXfYzAQGXm0eI87u3NMudNhqFj2NISJenxQHg=="
   "resolved" "https://registry.npmjs.org/react-native-codegen/-/react-native-codegen-0.0.6.tgz"
