@@ -5,7 +5,12 @@ import OcticonsIcons from 'react-native-vector-icons/Octicons';
 import FontistoIcons from 'react-native-vector-icons/Fontisto';
 import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
-import testJsonFile from '../data.json';
+import axios from 'axios';
+
+
+const baseUrl = 'http://10.0.2.2:8000';
+const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
+const email = 'laurentiu@gmail.com';
 
 export default class PrincipalScreen extends React.Component {
 
@@ -21,53 +26,144 @@ export default class PrincipalScreen extends React.Component {
 
     async getCurrentAccount() {
         try {
-            const response = await
-                fetch('http://10.0.2.2:3000/current_account');
-            const jsonResponse = await response.json();
+            const url = `${baseUrl}/accounts/`
+            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
             this.setState({
-                currentAccount: jsonResponse 
-            });
-        } catch(error) {
-            console.log(error);
-        } finally {
-            this.setState({
+                currentAccount: response.data,
                 isLoadingCA: false
             });
+        } catch (error) {
+            console.error(error);
         }
     }
 
     async getRecentTransactions() {
         try {
-            const response = await
-                fetch('http://10.0.2.2:3000/recent_transactions');
-            const jsonResponse = await response.json();
+            const url = `${baseUrl}/transactions/?user=${email}`
+            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
             this.setState({
-                recentTransactions: jsonResponse 
-            });
-        } catch(error) {
-            console.log(error);
-        } finally {
-            this.setState({
+                recentTransactions: response.data,
                 isLoadingRT: false
             });
+        } catch (error) {
+            console.error(error);
         }
     }
 
     componentDidMount() {
-
-        // return fetch('http://10.0.2.2:3000/current_account')
-        //     .then( (response) => response.json())
-        //     .then( (responseJson) => {
-        //         this.setState({
-        //             isLoading: false,
-        //             currentAccount: responseJson,
-        //         })
-        //     })
-        //     .catch((error) => {console.log(error)});
         this.getCurrentAccount();
         this.getRecentTransactions();
     }
 
+    senderOrReceiver(i, top) {
+        var toOrFrom ='';
+        if (email === this.state.recentTransactions[i].sender) {
+            toOrFrom = "To";
+        } else {
+            toOrFrom = "From";
+        }
+        return (
+            <Text 
+                style = {{
+                    fontSize: 15,
+                    fontWeight: "bold",
+                    alignSelf: 'center',
+                    top: top,
+                    left: "-5%"
+                }}
+            >
+            {toOrFrom}: {this.state.recentTransactions[i].sender}
+            </Text>
+        )
+    }
+
+    setCurrency(currency) {
+        if (currency === 'RON') {
+            return 'RON';
+        }
+        else if (currency === 'EUR') {
+            return '\u20AC';
+        }
+        else if (currency === 'USD') {
+            return '\u0024';
+        }
+        else if (currency === 'GBP') {
+            return '\u00A3';
+        }
+    }
+
+    setFlag(currency) {
+        if (currency === 'RON') {
+            return 'romania';
+        }
+        else if (currency === 'EUR') {
+            return "european-union";
+        }
+        else if (currency === 'USD') {
+            return "united-states-of-america";
+        }
+        else if (currency === 'GBP') {
+            return "england";
+        }
+    }
+
+    recentTransactionsTile() {
+        
+        return (
+            <View style = {styles.recentTransactions}>
+                <Text style = {styles.recentTransactionTitle}>
+                        Recent Transactions
+                </Text>
+
+                <View >
+                    <Image style = {{
+                                top: "30%",
+                                left: "3%",
+                                borderRadius: 20
+                            }} 
+                            source={{width:35, height:35, uri: 'https://picsum.photos/200'}}
+                    ></Image>
+                    <Image style = {{
+                                top: "60%",
+                                left: "3%",
+                                borderRadius: 20
+                            }} 
+                            source={{width:35, height:35, uri: 'https://picsum.photos/200'}}></Image>
+                </View>
+                <View >
+                    {this.senderOrReceiver(0, "-100%")}
+                    {this.senderOrReceiver(1, "-18%")}
+                </View>
+
+                <View>
+                    <Text 
+                        style = {{
+                            fontSize: 15,
+                            fontWeight: "bold",
+                            alignSelf: 'center',
+                            top: "-203%",
+                            left: "35%"
+                        }}
+                    >
+                            {this.setCurrency(this.state.recentTransactions[0].currency)} {this.state.recentTransactions[0].amount}
+                    </Text>
+
+                    <Text 
+                        style = {{
+                            fontSize: 15,
+                            fontWeight: "bold",
+                            alignSelf: 'center',
+                            top: "-120%",
+                            left: "35%"
+                        }}
+                    >
+                            {this.setCurrency(this.state.recentTransactions[1].currency)} {this.state.recentTransactions[1].amount}
+                    </Text>
+                </View>
+                
+            </View>
+        );
+    }
     render() {
         if (this.state.isLoadingCA == true || this.state.isLoadingRT == true) {
             return (
@@ -76,16 +172,6 @@ export default class PrincipalScreen extends React.Component {
                 </View>
             )
         } else {
-            let flag = '';
-            let currency = '';
-            if (this.state.currentAccount[0].currency === 'RON') {
-                flag = 'romania';
-                currency = 'RON';
-            }
-            else if (this.state.currentAccount[0].currency === 'EUR') {
-                flag = "european-union";
-                currency = '\u20AC';
-            }
             return (
                 <>
                     <StatusBar backgroundColor='#7de24e'></StatusBar>
@@ -103,90 +189,19 @@ export default class PrincipalScreen extends React.Component {
                             <View style = {styles.borderAccounts}>
 
                                 <View style={styles.flagStyle}>
-                                    <FlagIcon name={flag} height="60" width="60"></FlagIcon>
+                                    <FlagIcon name={this.setFlag(this.state.currentAccount[0].currency)} height="60" width="60">
+                                    </FlagIcon>
                                 </View>
 
                                 <Text style = {styles.amountText}>
-                                    {currency}{this.state.currentAccount[0].cash}
+                                    {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                 </Text>
 
                             </View> 
 
                             {/* Recent transactions. Press the white slide*/}
                             <TouchableOpacity onPress={() => this.props.navigation.navigate('TransactionPage')}>
-                                <View style = {styles.recentTransactions}>
-                                    <Text style = {styles.recentTransactionTitle}>
-                                            Recent Transactions
-                                    </Text>
-
-                                    <View >
-                                        <Image style = {{
-                                                    top: "30%",
-                                                    left: "3%",
-                                                    borderRadius: 20
-                                                }} 
-                                                source={{width:35, height:35, uri: 'https://picsum.photos/200'}}
-                                        ></Image>
-                                        <Image style = {{
-                                                    top: "60%",
-                                                    left: "3%",
-                                                    borderRadius: 20
-                                                }} 
-                                                source={{width:35, height:35, uri: 'https://picsum.photos/200'}}></Image>
-                                    </View>
-
-                                    <View >
-                                        <Text 
-                                            style = {{
-                                                fontSize: 15,
-                                                fontWeight: "bold",
-                                                alignSelf: 'center',
-                                                top: "-100%",
-                                                left: "-5%"
-                                            }}
-                                        >
-                                                To: GabrielP
-                                        </Text>
-                                        <Text 
-                                            style = {{
-                                                fontSize: 15,
-                                                fontWeight: "bold",
-                                                alignSelf: 'center',
-                                                top: "-18%",
-                                                left: "-5%"
-                                            }}
-                                        >
-                                                From: GabrielI
-                                        </Text>
-                                    </View>
-
-                                    <View>
-                                        <Text 
-                                            style = {{
-                                                fontSize: 15,
-                                                fontWeight: "bold",
-                                                alignSelf: 'center',
-                                                top: "-203%",
-                                                left: "35%"
-                                            }}
-                                        >
-                                                RON 6.9
-                                        </Text>
-
-                                        <Text 
-                                            style = {{
-                                                fontSize: 15,
-                                                fontWeight: "bold",
-                                                alignSelf: 'center',
-                                                top: "-120%",
-                                                left: "35%"
-                                            }}
-                                        >
-                                                RON 6.9
-                                        </Text>
-                                    </View>
-                                    
-                                </View> 
+                                 {this.recentTransactionsTile()}
                             </TouchableOpacity>
                             
 
@@ -212,13 +227,13 @@ export default class PrincipalScreen extends React.Component {
 
                                 <View style={{top: "-28%", left: "10%"}}>
                                     <Text style = {styles.amountOverallBalanceCash}>
-                                        {currency}{this.state.currentAccount[0].cash}
+                                        {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceStocks}>
-                                            {currency}{this.state.currentAccount[0].stocks}
+                                            hardcoded
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceSafe}>
-                                        {currency}{this.state.currentAccount[0].safe}
+                                        hardcoded
                                     </Text>
                                 </View>
                             </View>

@@ -46,7 +46,7 @@ class Account(models.Model):
             default=CURRENT,
     )
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=20, decimal_places=6)
+    balance = models.DecimalField(max_digits=20, decimal_places=2)
     currency = models.CharField(max_length=3)
     creation_time = models.DateTimeField('creation date', auto_now_add=True)
     last_updated_time = models.DateTimeField('last updated date', auto_now=True)
