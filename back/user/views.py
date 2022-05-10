@@ -60,9 +60,23 @@ class AccountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        accounts = Account.objects.all()
-        serializer = AccountSerializer(accounts, many=True)
-        return Response(serializer.data)
+        email = request.GET.get("user", None)
+
+        if email is None:
+            accounts = Account.objects.all()
+            serializer = AccountSerializer(accounts, many=True)
+            return Response(serializer.data)
+        else:
+            user = CustomUser.objects.get(email=email)
+            if user is None:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+
+            account = Account.objects.filter(owner=user).all()
+            if len(account) == 0:
+                return JsonResponse([], safe=False)
+
+            serializer = AccountSerializer(account.get())
+            return Response(serializer.data)
 
     def post(self, request):
         data = JSONParser().parse(request)
@@ -72,20 +86,6 @@ class AccountView(APIView):
             return Response(serializer.data)
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
-
-@api_view(['GET'])
-def user_accounts_detail(request, email):
-    user = CustomUser.objects.get(email=email)
-    if user is None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    account = Account.objects.get(owner=user)
-    if account is None:
-        return Response(status=status.HTTP_404_NOT_FOUND)
-
-    if request.method == 'GET':
-        serializer = AccountSerializer(account)
-        return Response(serializer.data)
 
 
 class VaultView(APIView):
@@ -105,16 +105,6 @@ class VaultView(APIView):
             return Response(serializer.data)
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
-
-class ExchangeView(APIView):
-
-    def post(self, request):
-        data = JSONParser.parse(request)
-        serializer = ExchangeSerializer(data=data)
-        if serializer.is_valid():
-            return CurrencyExchange.convert_amount(serializer["base_currency"],
-                                                   serializer["to_currency"],
-                                                   serializer["amount"])
 
 @csrf_exempt
 def login_request(req):

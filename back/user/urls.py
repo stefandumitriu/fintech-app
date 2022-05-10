@@ -9,7 +9,6 @@ urlpatterns = [
     path('login/', views.login_request),
     path('vaults/', views.VaultView.as_view()),
     path('users/<str:phone>', views.user_detail),
-    path('accounts/<str:email>', views.user_accounts_detail),
     path('exchange/', views.convert_amount)
 ]
 
