@@ -5,6 +5,7 @@ import axios from 'axios';
 
 const baseUrl = 'http://10.0.2.2:8000';
 const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
+const email = 'laurentiu@gmail.com';
 // Tested to print transactions depending on an array
 export default class TransactionPage extends React.Component {
     
@@ -18,7 +19,7 @@ export default class TransactionPage extends React.Component {
 
     async getRecentTransactions() {
         try {
-            const url = `${baseUrl}/transactions/`
+            const url = `${baseUrl}/transactions/?user=${email}`
             const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
             this.setState({
                 recentTransactions: response.data

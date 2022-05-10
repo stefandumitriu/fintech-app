@@ -8,14 +8,14 @@
 			"stocks": 1000,
 	  	"cash": 105.6,
 	  	"safe": 20000,
-	  	"currency": "EUR"
+	  	"currency": "RON"
 			}
   ],
   "recent_transactions": [
 		{
 			"id": 1,
 			"this_sent": false,
-			"amount": 25.78,
+			"amount": 69.69,
 			"currency": "RON",
 			"who": "Me myself and I"
 		},
