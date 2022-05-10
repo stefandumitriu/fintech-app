@@ -24,10 +24,3 @@ class VaultSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vault
         fields = ['name', 'deadline_date', 'goal', 'owner']
-
-
-class ExchangeSerializer(serializers.ModelSerializer):
-    base_currency = serializers.CharField(max_length=3)
-    to_currency = serializers.CharField(max_length=3)
-    amount = serializers.DecimalField(max_digits=20, decimal_places=6)
-

@@ -9,11 +9,10 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 from .models import CustomUser, Account, Vault
-from .serializers import CustomUserSerializer, AccountSerializer, VaultSerializer, ExchangeSerializer
+from .serializers import CustomUserSerializer, AccountSerializer, VaultSerializer
 from .auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_condition import And, Or, Not
-from .exchange import CurrencyExchange
 import requests
 import json
 
