@@ -24,7 +24,6 @@ export default class TransactionPage extends React.Component {
             this.setState({
                 recentTransactions: response.data
             });
-            console.log(this.state.recentTransactions);
         } catch (error) {
             console.error(error);
         }
@@ -35,16 +34,20 @@ export default class TransactionPage extends React.Component {
     }
 
     list() {
-        return this.state.recentTransactions && this.state.recentTransactions.map( (recentTransaction, i) => {
+        return this.state.recentTransactions && this.state.recentTransactions.map( (recentTransaction) => {
                 var currency = '';
                 if (recentTransaction.currency === 'RON')
                     currency = "RON";
                 else if (recentTransaction.currency === 'EUR')
                     currency = '\u20AC';
+                else if (recentTransaction.currency === 'USD')
+                    currency = '\u0024';
+                else if (recentTransaction.currency === 'GBP')
+                    currency = '\u00A3';
 
-                //if (recentTransaction.this_sent === true) {
+                if (recentTransaction.sender === email) {
                     return (
-                        <View key={i}>
+                        <View key={recentTransaction.id}>
                             <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
                                 To: {recentTransaction.receiver}
@@ -54,19 +57,19 @@ export default class TransactionPage extends React.Component {
                             </Text>
                         </View>
                     );
-                // } else {
-                //     return (
-                //         <View key={recentTransaction.id}>
-                //             <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
-                //             <Text style={styles.userText}>
-                //                 From: {recentTransaction.who}
-                //             </Text>
-                //             <Text style={styles.amount}>
-                //                 {currency} {recentTransaction.amount}
-                //             </Text>
-                //         </View>
-                //     );
-                // }
+                } else {
+                    return (
+                        <View key={recentTransaction.id}>
+                            <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
+                            <Text style={styles.userText}>
+                                From: {recentTransaction.sender}
+                            </Text>
+                            <Text style={styles.amount}>
+                                {currency} {recentTransaction.amount}
+                            </Text>
+                        </View>
+                    );
+                }
             }
         );
     }
