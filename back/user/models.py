@@ -46,10 +46,29 @@ class Account(models.Model):
             default=CURRENT,
     )
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    balance = models.DecimalField(max_digits=20, decimal_places=2)
+    balance = models.DecimalField(max_digits=20, decimal_places=6)
     currency = models.CharField(max_length=3)
     creation_time = models.DateTimeField('creation date', auto_now_add=True)
     last_updated_time = models.DateTimeField('last updated date', auto_now=True)
 
     objects = models.Manager()
 
+
+class Vault(models.Model):
+    name = models.CharField(max_length=30)
+    goal = models.DecimalField(max_digits=20, decimal_places=6)
+    deadline_date = models.DateTimeField()
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    balance = models.DecimalField(max_digits=20, decimal_places=6, default=0)
+
+    objects = models.Manager()
+
+    def deposit(self, account, amount):
+        user_account = Account.objects.get(account)
+        if user_account.balance >= amount:
+            self.balance += amount
+            user_account.balance -= amount
+
+    def withdraw(self):
+        if self.goal <= self.balance or self.deadline_date < timezone.now():
+            return Vault.objects.pop(self)

@@ -8,11 +8,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import CustomUser, Account
-from .serializers import CustomUserSerializer, AccountSerializer
+from .models import CustomUser, Account, Vault
+from .serializers import CustomUserSerializer, AccountSerializer, VaultSerializer, ExchangeSerializer
 from .auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_condition import And, Or, Not
+from .exchange import CurrencyExchange
+import requests
+import json
 
 
 # Create your views here.
@@ -71,6 +74,48 @@ class AccountView(APIView):
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
 
+@api_view(['GET'])
+def user_accounts_detail(request, email):
+    user = CustomUser.objects.get(email=email)
+    if user is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    account = Account.objects.get(owner=user)
+    if account is None:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = AccountSerializer(account)
+        return Response(serializer.data)
+
+
+class VaultView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self):
+        vaults = Vault.objects.all()
+        serializer = VaultSerializer(vaults, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        data = JSONParser().parse(request)
+        serializer = VaultSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response({"error": serializer.errors,
+                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+
+class ExchangeView(APIView):
+
+    def post(self, request):
+        data = JSONParser.parse(request)
+        serializer = ExchangeSerializer(data=data)
+        if serializer.is_valid():
+            return CurrencyExchange.convert_amount(serializer["base_currency"],
+                                                   serializer["to_currency"],
+                                                   serializer["amount"])
 
 @csrf_exempt
 def login_request(req):
@@ -85,3 +130,28 @@ def login_request(req):
         return JsonResponse({"token": token.key})
     else:
         return HttpResponse("Login failed", status=400)
+
+
+@api_view(['POST'])
+def convert_amount(req):
+    data = JSONParser().parse(req)
+    base_currency = data['base_currency']
+    to_currency = data['to_currency']
+    amount = data['amount']
+    url = f"https://api.apilayer.com/exchangerates_data/convert?to={to_currency}&from={base_currency}&amount={amount}"
+
+    payload = {}
+    headers = {
+        "apikey": "6LnKNclG2tnGHc4cFHsSArKaKL3YjxH6"
+    }
+
+    response = requests.request("GET", url, headers=headers, data=payload)
+
+    if response.status_code == 200:
+        json_obj = json.loads(response.text)
+        return JsonResponse({"base_currency": json_obj["query"]["from"],
+                             "to_currency": json_obj["query"]["to"],
+                             "amount": json_obj["query"]["amount"],
+                             "result": json_obj["result"]})
+    else:
+        return response

@@ -7,7 +7,10 @@ urlpatterns = [
     path('users/', views.UserView.as_view()),
     path('accounts/', views.AccountView.as_view()),
     path('login/', views.login_request),
-    path('users/<str:phone>', views.user_detail)
+    path('vaults/', views.VaultView.as_view()),
+    path('users/<str:phone>', views.user_detail),
+    path('accounts/<str:email>', views.user_accounts_detail),
+    path('exchange/', views.convert_amount)
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
