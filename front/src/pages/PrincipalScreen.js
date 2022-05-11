@@ -9,7 +9,7 @@ import axios from 'axios';
 
 const baseUrl = 'http://10.0.2.2:8000';
 const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-const email = 'abc@gmail.com';
+const email = 'laurentiu@gmail.com';
 
 export default class PrincipalScreen extends React.Component {
 
