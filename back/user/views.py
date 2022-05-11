@@ -75,7 +75,7 @@ class AccountView(APIView):
             if len(account) == 0:
                 return JsonResponse([], safe=False)
 
-            serializer = AccountSerializer(account.get())
+            serializer = AccountSerializer(account, many=True)
             return Response(serializer.data)
 
     def post(self, request):
