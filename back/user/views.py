@@ -8,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from .models import CustomUser, Account, Vault
-from .serializers import CustomUserSerializer, AccountSerializer, VaultSerializer
+from .models import CustomUser, Account, Vault, Card
+from .serializers import CustomUserSerializer, AccountSerializer, VaultSerializer, CardSerializer
 from .auth import authenticate
 from rest_framework.authtoken.models import Token
 from rest_condition import And, Or, Not
@@ -60,23 +60,33 @@ class AccountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        email = request.GET.get("user", None)
+        phone_number = request.GET.get("user", None)
 
-        if email is None:
+        if phone_number is None:
             accounts = Account.objects.all()
-            serializer = AccountSerializer(accounts, many=True)
-            return Response(serializer.data)
+            cards = Card.objects.all()
+            serializer1 = AccountSerializer(accounts, many=True)
+            serializer2 = CardSerializer(cards, many=True)
+            return Response([serializer1.data, serializer2.data])
         else:
-            user = CustomUser.objects.get(email=email)
+            user = CustomUser.objects.get(phone_number=phone_number)
             if user is None:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             account = Account.objects.filter(owner=user).all()
-            if len(account) == 0:
+            cards = Card.objects.filter(account__owner=user).all()
+            if len(account) == 0 and len(cards) == 0:
                 return JsonResponse([], safe=False)
-
-            serializer = AccountSerializer(account.get())
-            return Response(serializer.data)
+            elif len(cards) == 0:
+                serializer = AccountSerializer(account, many=True)
+                return Response(serializer.data)
+            elif len(account) == 0:
+                serializer = CardSerializer(cards, many=True)
+                return Response(serializer.data)
+            else:
+                serializer1 = AccountSerializer(account, many=True)
+                serializer2 = CardSerializer(cards, many=True)
+                return Response([serializer1.data, serializer2.data])
 
     def post(self, request):
         data = JSONParser().parse(request)
@@ -86,7 +96,6 @@ class AccountView(APIView):
             return Response(serializer.data)
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
-
 
 class VaultView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
@@ -105,6 +114,17 @@ class VaultView(APIView):
             return Response(serializer.data)
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+
+
+@api_view(['POST'])
+def get_card(req):
+    data = JSONParser().parse(req)
+    serializer = CardSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response({"error": serializer.errors,
+                     "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
 
 @csrf_exempt
 def login_request(req):

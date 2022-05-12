@@ -1,3 +1,5 @@
+import datetime
+
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, UserManager, Group, Permission
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +14,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     age = models.IntegerField(_('age'))
     address = models.CharField(_('home address'), max_length=300, blank=True)
     phone_number = models.CharField(_('phone number'), max_length=12, unique=True, blank=False)
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
     groups = models.ManyToManyField(Group, related_name='user_role')
     user_permissions = models.ManyToManyField(Permission, related_name='user_perm')
     last_login = models.DateTimeField(default=timezone.now)
@@ -52,6 +54,21 @@ class Account(models.Model):
     last_updated_time = models.DateTimeField(auto_now=True)
 
     objects = models.Manager()
+
+
+class Card(models.Model):
+    account = models.OneToOneField(
+        Account,
+        on_delete=models.CASCADE
+    )
+    card_expiration_date = models.DateTimeField(null=True)
+    card_number = models.CharField(max_length=16, unique=True)
+
+    objects = models.Manager()
+
+    def save(self, *args, **kwargs):
+        self.card_expiration_date = self.account.creation_time + datetime.timedelta(days=1461)
+        super(Card, self).save(*args, **kwargs)
 
 
 class Vault(models.Model):

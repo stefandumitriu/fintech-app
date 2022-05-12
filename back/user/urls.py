@@ -9,7 +9,8 @@ urlpatterns = [
     path('login/', views.login_request),
     path('vaults/', views.VaultView.as_view()),
     path('users/<str:phone>', views.user_detail),
-    path('exchange/', views.convert_amount)
+    path('exchange/', views.convert_amount),
+    path('get_card/', views.get_card)
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
