@@ -7,25 +7,6 @@ const baseUrl = 'http://10.0.2.2:8000';
 const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
 const email = 'laurentiu@gmail.com';
 
-const DATA = [
-  {
-    id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-    title: 'First Item',
-  },
-  {
-    id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-    title: 'Second Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d72',
-    title: 'Third Item',
-  },
-  {
-    id: '58694a0f-3da1-471f-bd96-145571e29d77',
-    title: 'Fourth Item',
-  },
-];
-
 const currency = (currency) => {
   if (currency === 'RON') {
       return 'RON';
@@ -68,13 +49,12 @@ export default class WalletPage extends React.Component {
 
   async getAccounts() {
     try {
-      const url = `${baseUrl}/accounts/`
+      const url = `${baseUrl}/accounts/?user=${email}`
       const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
             this.setState({
               accounts: response.data,
               isLoading: false
             });
-      console.log(this.state.accounts);
     } catch (error) {
       console.error(error);
     }
@@ -99,7 +79,7 @@ export default class WalletPage extends React.Component {
                 Type: {account.item.acc_type}
               </Text>
               <Text style = {styles.detailsContent}>
-                Card expiration date: 
+                Card expiration date: hardcoded
               </Text>
               <Text style = {styles.detailsContent}>
                 Currency: {account.item.currency}

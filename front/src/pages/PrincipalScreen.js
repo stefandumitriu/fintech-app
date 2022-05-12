@@ -202,12 +202,12 @@ export default class PrincipalScreen extends React.Component {
                             <View style = {styles.borderAccounts}>
 
                                 <View style={styles.flagStyle}>
-                                    <FlagIcon name={this.setFlag(this.state.currentAccount.currency)} height="60" width="60">
+                                    <FlagIcon name={this.setFlag(this.state.currentAccount[0].currency)} height="60" width="60">
                                     </FlagIcon>
                                 </View>
 
                                 <Text style = {styles.amountText}>
-                                    {this.setCurrency(this.state.currentAccount.currency)}{this.state.currentAccount.balance}
+                                    {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                 </Text>
 
                             </View> 
@@ -240,7 +240,7 @@ export default class PrincipalScreen extends React.Component {
 
                                 <View style={{top: "-28%", left: "10%"}}>
                                     <Text style = {styles.amountOverallBalanceCash}>
-                                        {this.setCurrency(this.state.currentAccount.currency)}{this.state.currentAccount.balance}
+                                        {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceStocks}>
                                             hardcoded
