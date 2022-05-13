@@ -134,7 +134,7 @@ def login_request(req):
     user = authenticate(phone_number=phone_number, password=password)
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
-        user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+        user.last_login = str(timezone.now().strftime("%Y-%m-%d %H:%M:%S"))
         user.save()
         return JsonResponse({"token": token.key})
     else:
