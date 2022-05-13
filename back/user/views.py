@@ -60,16 +60,16 @@ class AccountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        phone_number = request.GET.get("user", None)
+        email = request.GET.get("user", None)
 
-        if phone_number is None:
+        if email is None:
             accounts = Account.objects.all()
             cards = Card.objects.all()
             serializer1 = AccountSerializer(accounts, many=True)
             serializer2 = CardSerializer(cards, many=True)
             return Response([serializer1.data, serializer2.data])
         else:
-            user = CustomUser.objects.get(phone_number=phone_number)
+            user = CustomUser.objects.get(email=email)
             if user is None:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -87,6 +87,9 @@ class AccountView(APIView):
                 serializer1 = AccountSerializer(account, many=True)
                 serializer2 = CardSerializer(cards, many=True)
                 return Response([serializer1.data, serializer2.data])
+
+            serializer = AccountSerializer(account, many=True)
+            return Response(serializer.data)
 
     def post(self, request):
         data = JSONParser().parse(request)
@@ -134,7 +137,19 @@ def login_request(req):
     user = authenticate(phone_number=phone_number, password=password)
     if user is not None:
         token, created = Token.objects.get_or_create(user=user)
-        user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+<<<<<<< Updated upstream
+        user.last_login = str(timezone.now().strftime("%Y-%m-%d %H:%M:%S"))
+=======
+        ##user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+>>>>>>> Stashed changes
+=======
+        ##user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+>>>>>>> Stashed changes
+=======
+        ##user.last_login = str(timezone.now().strftime("%Y-%d-%m %H:%M:%S"))
+>>>>>>> Stashed changes
         user.save()
         return JsonResponse({"token": token.key})
     else:
