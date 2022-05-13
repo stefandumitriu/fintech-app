@@ -2,10 +2,12 @@ import axios from 'axios';
 import React from 'react';
 import { ScrollView, View, FlatList, StyleSheet, Text, StatusBar, Image } from 'react-native';
 import FlagIcon from 'react-native-ico-flags';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const baseUrl = 'http://10.0.2.2:8000';
-const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-const email = 'laurentiu@gmail.com';
+// const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
+// const email = 'laurentiu@gmail.com';
+// const phone_number = '0712345678';
 
 const currency = (currency) => {
   if (currency === 'RON') {
@@ -44,13 +46,33 @@ export default class WalletPage extends React.Component {
     this.state = {
         isLoading: true,
         accounts: null,
+        token: null,
+        email: null,
+        isLoadingCredentials: true,
     }
   }
 
+  async getUser() {
+    try {
+      const savedUser = await AsyncStorage.getItem("loginInfo")
+        .then(async (res) => {
+            const val = await res;
+            const currentUser = JSON.parse(val);
+            this.setState({
+                token: currentUser.token,
+                email: currentUser.email,
+                isLoadingCredentials: false,
+            });
+        });       
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   async getAccounts() {
     try {
-      const url = `${baseUrl}/accounts/?user=${email}`
-      const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
+      const url = `${baseUrl}/accounts/?user=${this.state.email}`
+      const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
             this.setState({
               accounts: response.data,
               isLoading: false
@@ -61,8 +83,11 @@ export default class WalletPage extends React.Component {
   }
 
   componentDidMount() {
-    this.getAccounts();
-  }
+    Promise.resolve(this.getUser())
+        .then(() => {
+            this.getAccounts();
+        });
+}
 
   renderItem (account) {
     return (

@@ -6,13 +6,13 @@ import FontistoIcons from 'react-native-vector-icons/Fontisto';
 import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const baseUrl = 'http://10.0.2.2:8000';
-const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-const email = 'laurentiu@gmail.com';
-
+// const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
+// const email = 'laurentiu@gmail.com';
 export default class PrincipalScreen extends React.Component {
-
+    
     constructor(props) {
         super(props);
         this.state = {
@@ -20,13 +20,34 @@ export default class PrincipalScreen extends React.Component {
             currentAccount: null,
             recentTransactions: null,
             isLoadingRT: true,
+            token: null,
+            email: null,
+            isLoadingCredentials: true,
         }
     }
 
+    async getUser() {
+        try {
+          const savedUser = await AsyncStorage.getItem("loginInfo")
+            .then(async (res) => {
+                const val = await res;
+                const currentUser = JSON.parse(val);
+                this.setState({
+                    token: currentUser.token,
+                    email: currentUser.email,
+                    isLoadingCredentials: false,
+                });
+            });       
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
     async getCurrentAccount() {
         try {
-            const url = `${baseUrl}/accounts/?user=${email}`
-            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
+            const url = `${baseUrl}/accounts/?user=${this.state.email}`
+
+            const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
             this.setState({
                 currentAccount: response.data,
                 isLoadingCA: false
@@ -38,8 +59,8 @@ export default class PrincipalScreen extends React.Component {
 
     async getRecentTransactions() {
         try {
-            const url = `${baseUrl}/transactions/?user=${email}`
-            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
+            const url = `${baseUrl}/transactions/?user=${this.state.email}`
+            const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
             this.setState({
                 recentTransactions: response.data,
                 isLoadingRT: false
@@ -50,13 +71,16 @@ export default class PrincipalScreen extends React.Component {
     }
 
     componentDidMount() {
-        this.getCurrentAccount();
-        this.getRecentTransactions();
+        Promise.resolve(this.getUser())
+            .then(() => {
+                this.getCurrentAccount();
+                this.getRecentTransactions();
+            });
     }
 
     senderOrReceiver(i, top) {
         var toOrFrom ='';
-        if (email === this.state.recentTransactions[i].sender) {
+        if (this.state.email === this.state.recentTransactions[i].sender) {
             toOrFrom = "To";
             return (
                 <Text 
@@ -178,7 +202,7 @@ export default class PrincipalScreen extends React.Component {
         );
     }
     render() {
-        if (this.state.isLoadingCA == true || this.state.isLoadingRT == true) {
+        if (this.state.isLoadingCA == true || this.state.isLoadingRT == true || this.state.isLoadingCredentials == true) {
             return (
                 <View>
                     <ActivityIndicator/>

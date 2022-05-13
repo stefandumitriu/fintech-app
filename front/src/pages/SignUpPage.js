@@ -9,21 +9,22 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import axios from 'axios';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Entypo as Icon } from '@expo/vector-icons';
 
 const SignUpPage = ({navigation}) => {
-  const surnameInputRef = createRef();
+  const last_nameInputRef = createRef();
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
   const ageInputRef = createRef();
   const addressInputRef = createRef();
-  const phoneNumberInputRef = createRef();
+  const phone_numberInputRef = createRef();
 
   const SignUpSchema = Yup.object().shape({
-    name: Yup.string().required('Required'),
-    surname: Yup.string().required('Required'),
+    first_name: Yup.string().required('Required'),
+    last_name: Yup.string().required('Required'),
     email: Yup.string()
       .email('Invalid email')
       .required('Required'),
@@ -36,7 +37,7 @@ const SignUpPage = ({navigation}) => {
       .required('Required'),
     address: Yup.string()
       .required('Required'),
-    phoneNumber: Yup.number()
+    phone_number: Yup.number()
       .integer('Must be an integer')
       .positive('Must be a positive number')
       .required('Required'),
@@ -44,8 +45,21 @@ const SignUpPage = ({navigation}) => {
 
   const formik = useFormik({
     validationSchema: SignUpSchema,
-    initialValues: { name: '', surname: '', email: '', password: '', age: '', address: '', phoneNumber: '' },
-    onSubmit: () => navigation.navigate('LoginPage'),
+    initialValues: { first_name: '', last_name: '', email: '', password: '', age: '', address: '', phone_number: '' },
+    onSubmit: (values, actions) => axios({
+      method: "POST",
+      url: "http://10.0.2.2:8000/users/",
+      data: values
+    })
+      .then(response => {
+        actions.setSubmitting(false);
+        actions.resetForm();
+        navigation.navigate('LoginPage');
+      })
+      .catch(error => {
+        actions.setSubmitting(false);
+        console.log(error);
+      })
   });
 
   return (
@@ -65,38 +79,38 @@ const SignUpPage = ({navigation}) => {
             </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={formik.handleChange('name')}
-              onBlur={formik.handleBlur('name')}
-              errors={formik.errors.name}
-              touched={formik.touched.name}
+              onChangeText={formik.handleChange('first_name')}
+              onBlur={formik.handleBlur('first_name')}
+              errors={formik.errors.first_name}
+              touched={formik.touched.first_name}
               underlineColorAndroid="#f000"
-              placeholder="Enter Name"
+              placeholder="Enter First Name"
               placeholderTextColor="#8b9cb5"
               autoCapitalize="sentences"
               returnKeyType="next"
               onSubmitEditing={() =>
-                surnameInputRef.current && surnameInputRef.current.focus()
+                last_nameInputRef.current && last_nameInputRef.current.focus()
               }
               blurOnSubmit={false}
             />
           </View>
-          <View style={styles.SurnameSectionStyle}>
+          <View style={styles.last_nameSectionStyle}>
             <View style={styles.IconStyle}>
-              {formik.touched.surname && formik.errors.surname ? 
+              {formik.touched.last_name && formik.errors.last_name ? 
                 (<Icon name={'user'} color='#ff292f' size={16} />) : 
                 (<Icon name={'user'} color='#223e4b' size={16} />)}
             </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={formik.handleChange('surname')}
-              onBlur={formik.handleBlur('surnmae')}
-              errors={formik.errors.surname}
-              touched={formik.touched.surname}
+              onChangeText={formik.handleChange('last_name')}
+              onBlur={formik.handleBlur('last_name')}
+              errors={formik.errors.last_name}
+              touched={formik.touched.last_name}
               underlineColorAndroid="#f000"
-              placeholder="Enter Surname"
+              placeholder="Enter Last name"
               placeholderTextColor="#8b9cb5"
               autoCapitalize='sentences'
-              ref={surnameInputRef}
+              ref={last_nameInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
                 emailInputRef.current && emailInputRef.current.focus()
@@ -195,27 +209,27 @@ const SignUpPage = ({navigation}) => {
               ref={addressInputRef}
               returnKeyType="next"
               onSubmitEditing={() =>
-                phoneNumberInputRef.current && phoneNumberInputRef.current.focus()}
+                phone_numberInputRef.current && phone_numberInputRef.current.focus()}
               blurOnSubmit={false}
             />
           </View>
           <View style={styles.SectionStyle}>
             <View style={styles.IconStyle}>
-              {formik.touched.phoneNumber && formik.errors.phoneNumber ? 
+              {formik.touched.phone_number && formik.errors.phone_number ? 
                 (<Icon name={'old-phone'} color='#ff292f' size={16} />) : 
                 (<Icon name={'old-phone'} color='#223e4b' size={16} />)}
             </View>
             <TextInput
               style={styles.inputStyle}
-              onChangeText={formik.handleChange('phoneNumber')}
-              onBlur={formik.handleBlur('phoneNumber')}
-              errors={formik.errors.phoneNumber}
-              touched={formik.touched.phoneNumber}
+              onChangeText={formik.handleChange('phone_number')}
+              onBlur={formik.handleBlur('phone_number')}
+              errors={formik.errors.phone_number}
+              touched={formik.touched.phone_number}
               underlineColorAndroid="#f000"
               placeholder="Enter Phone Number"
               placeholderTextColor="#8b9cb5"
               keyboardType="numeric"
-              ref={phoneNumberInputRef}
+              ref={phone_numberInputRef}
               returnKeyType="done"
               onSubmitEditing={Keyboard.dismiss}
               blurOnSubmit={false}
@@ -243,7 +257,7 @@ const styles = StyleSheet.create({
     marginRight: 35,
     margin: 10,
   },
-  SurnameSectionStyle: {
+  last_nameSectionStyle: {
     flexDirection: 'row',
     height: 40,
     marginTop: 20,

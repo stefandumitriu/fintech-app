@@ -10,27 +10,59 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
 } from 'react-native';
+import axios from 'axios';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Entypo as Icon } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const LoginScreen = ({navigation}) => {
+  const emailInputRef = createRef();
   const passwordInputRef = createRef();
 
   const LoginSchema = Yup.object().shape({
-    phoneNumber: Yup.number()
+    phone_number: Yup.number()
       .integer('Must be an integer')
       .positive('Must be a positive number')
       .required('Required'),
+    email: Yup.string()
+      .email('Invalid email')
+      .required('Required'),
     password: Yup.string()
-      .min(6, 'Too Short!')
+      .min(3, 'Too Short!')
       .required('Required')
   });
-
+  const storeUser = async (value) => {
+    try {
+      await AsyncStorage.setItem("loginInfo", JSON.stringify(value));
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const formik = useFormik({
     validationSchema: LoginSchema,
-    initialValues: { phoneNumber: '', password: '' },
-    onSubmit: () => navigation.replace('Menu'),
+    initialValues: { phone_number: '', email: '', password: '' },
+    onSubmit: (values, actions) => axios({
+      method: "POST",
+      url: "http://10.0.2.2:8000/login/",
+      data: {
+        phone_number: values.phone_number, 
+        password: values.password
+      }
+    })
+      .then(response => {
+        actions.setSubmitting(false);
+        const value = {
+          token: 'Token ' + response.data['token'],
+          email: values.email
+        };
+        storeUser(value);
+        navigation.replace('Menu');
+      })
+      .catch(error => {
+        actions.setSubmitting(false);
+        console.log(error);
+      })
   });
   
   return (
@@ -49,28 +81,51 @@ const LoginScreen = ({navigation}) => {
           <KeyboardAvoidingView enabled>
             <View style={styles.SectionStyle}>
               <View style={styles.IconStyle}>
-                {formik.touched.phoneNumber && formik.errors.phoneNumber ? 
+                {formik.touched.phone_number && formik.errors.phone_number ? 
                   (<Icon name={'old-phone'} color='#ff292f' size={16} />) : 
                   (<Icon name={'old-phone'} color='#223e4b' size={16} />)}
               </View>
               <TextInput
                 style={styles.inputStyle}
-                onChangeText={formik.handleChange('phoneNumber')}
-                onBlur={formik.handleBlur('phoneNumber')}
-                errors={formik.errors.phoneNumber}
-                touched={formik.touched.phoneNumber}
+                onChangeText={formik.handleChange('phone_number')}
+                onBlur={formik.handleBlur('phone_number')}
+                errors={formik.errors.phone_number}
+                touched={formik.touched.phone_number}
                 placeholder="Enter Phone Number"
                 placeholderTextColor="#8b9cb5"
                 keyboardType="numeric"
                 returnKeyType="next"
                 onSubmitEditing={() =>
-                  passwordInputRef.current &&
-                  passwordInputRef.current.focus()
+                  emailInputRef.current && emailInputRef.current.focus()
                 }
                 underlineColorAndroid="#f000"
                 blurOnSubmit={false}
               />
             </View>
+            <View style={styles.SectionStyle}>
+              <View style={styles.IconStyle}>
+                {formik.touched.email && formik.errors.email ? 
+                  (<Icon name={'mail'} color='#ff292f' size={16} />) : 
+                  (<Icon name={'mail'} color='#223e4b' size={16} />)}
+              </View>
+            <TextInput
+              style={styles.inputStyle}
+              onChangeText={formik.handleChange('email')}
+              onBlur={formik.handleBlur('email')}
+              errors={formik.errors.email}
+              touched={formik.touched.email}
+              underlineColorAndroid="#f000"
+              placeholder="Enter Email"
+              placeholderTextColor="#8b9cb5"
+              keyboardType="email-address"
+              ref={emailInputRef}
+              returnKeyType="next"
+              onSubmitEditing={() =>
+                passwordInputRef.current && passwordInputRef.current.focus()
+              }
+              blurOnSubmit={false}
+            />
+          </View>
             <View style={styles.SectionStyle}>
               <View style={styles.IconStyle}>
               {formik.touched.password && formik.errors.password ? 

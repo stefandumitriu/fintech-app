@@ -2,10 +2,11 @@ import React from 'react';
 import { StyleSheet, View, Text, ScrollView } from 'react-native';
 import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const baseUrl = 'http://10.0.2.2:8000';
-const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-const email = 'laurentiu@gmail.com';
+// const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
+// const email = 'laurentiu@gmail.com';
 // Tested to print transactions depending on an array
 export default class TransactionPage extends React.Component {
     
@@ -14,13 +15,33 @@ export default class TransactionPage extends React.Component {
         this.state = {
             recentTransactions: null,
             isLoading: true,
+            token: null,
+            email: null,
+            isLoadingCredentials: true,
         }
     }
 
+    async getUser() {
+        try {
+          const savedUser = await AsyncStorage.getItem("loginInfo")
+            .then(async (res) => {
+                const val = await res;
+                const currentUser = JSON.parse(val);
+                this.setState({
+                    token: currentUser.token,
+                    email: currentUser.email,
+                    isLoadingCredentials: false,
+                });
+            });       
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
     async getRecentTransactions() {
         try {
-            const url = `${baseUrl}/transactions/?user=${email}`
-            const response = await axios.get(url, {headers: {Authorization: token, "Content-Type": "application/json"}})
+            const url = `${baseUrl}/transactions/?user=${this.state.email}`
+            const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
             this.setState({
                 recentTransactions: response.data
             });
@@ -30,7 +51,10 @@ export default class TransactionPage extends React.Component {
     }
 
     componentDidMount() {
-        this.getRecentTransactions();
+        Promise.resolve(this.getUser())
+            .then(() => {
+                this.getRecentTransactions();
+            });
     }
 
     list() {
@@ -45,7 +69,7 @@ export default class TransactionPage extends React.Component {
                 else if (recentTransaction.currency === 'GBP')
                     currency = '\u00A3';
 
-                if (recentTransaction.sender === email) {
+                if (recentTransaction.sender === this.state.email) {
                     return (
                         <View key={recentTransaction.id}>
                             <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#7de24e' />
