@@ -12,3 +12,4 @@ web-build/
 *.env
 back/env/
 .idea/
+back/**/__pycache__/
