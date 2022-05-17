@@ -11,10 +11,11 @@ class CustomUserSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     owner = serializers.SlugRelatedField(many=False, read_only=False, queryset=CustomUser.objects.all(),
                                          slug_field="email")
+    iban = serializers.CharField(required=False)
 
     class Meta:
         model = Account
-        fields = ['iban', 'acc_type', 'owner', 'balance', 'currency']
+        fields = ['iban', 'acc_type', 'owner', 'balance', 'currency', 'card_expiration_date', 'card_number']
 
 
 class CardSerializer(serializers.ModelSerializer):

@@ -1,4 +1,5 @@
 import datetime
+from django.utils.crypto import get_random_string
 
 from django.contrib.auth.base_user import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.models import PermissionsMixin, UserManager, Group, Permission
@@ -37,23 +38,35 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 class Account(models.Model):
     CURRENT = 'CUR'
     SAVINGS = 'SVG'
+    CARD = 'CARD'
     ACCOUNT_TYPE_CHOICES = (
             (CURRENT, 'Current'),
             (SAVINGS, 'Savings'),
+            (CARD, 'CARD')
     )
     iban = models.CharField(max_length=34, unique=True)
     acc_type = models.CharField(
-            max_length=3,
+            max_length=8,
             choices=ACCOUNT_TYPE_CHOICES,
             default=CURRENT,
     )
     owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     balance = models.DecimalField(max_digits=20, decimal_places=2)
     currency = models.CharField(max_length=3)
-    creation_time = models.DateTimeField(auto_now=True, null=True)
+    creation_time = models.DateTimeField(auto_now=True)
     last_updated_time = models.DateTimeField(auto_now=True)
+    card_expiration_date = models.DateTimeField(null=True)
+    card_number = models.CharField(max_length=16, unique=True, null=True)
 
     objects = models.Manager()
+
+    def save(self, *args, **kwargs):
+        self.iban = "RO" + get_random_string(length=2, allowed_chars='1234567890') + "IONE" + \
+                    get_random_string(length=16, allowed_chars='1234567890')
+        if self.acc_type == self.CARD:
+            self.card_expiration_date = datetime.datetime.now() + datetime.timedelta(days=1461)
+            self.card_number = get_random_string(length=16, allowed_chars='1234567890')
+        super(Account, self).save(*args, **kwargs)
 
 
 class Card(models.Model):

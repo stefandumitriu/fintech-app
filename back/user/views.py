@@ -64,29 +64,23 @@ class AccountView(APIView):
 
         if email is None:
             accounts = Account.objects.all()
-            cards = Card.objects.all()
+            #cards = Card.objects.all()
             serializer1 = AccountSerializer(accounts, many=True)
-            serializer2 = CardSerializer(cards, many=True)
-            return Response([serializer1.data, serializer2.data])
+            #serializer2 = CardSerializer(cards, many=True)
+            return Response(serializer1.data)
         else:
             user = CustomUser.objects.get(email=email)
             if user is None:
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             account = Account.objects.filter(owner=user).all()
-            cards = Card.objects.filter(account__owner=user).all()
-            if len(account) == 0 and len(cards) == 0:
+            #cards = Card.objects.filter(account__owner=user).all()
+            if len(account) == 0:
                 return JsonResponse([], safe=False)
-            elif len(cards) == 0:
-                serializer = AccountSerializer(account, many=True)
-                return Response(serializer.data)
-            elif len(account) == 0:
-                serializer = CardSerializer(cards, many=True)
-                return Response(serializer.data)
             else:
                 serializer1 = AccountSerializer(account, many=True)
-                serializer2 = CardSerializer(cards, many=True)
-                return Response([serializer1.data, serializer2.data])
+                #serializer2 = CardSerializer(cards, many=True)
+                return Response(serializer1)
 
             serializer = AccountSerializer(account, many=True)
             return Response(serializer.data)
