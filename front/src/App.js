@@ -10,6 +10,8 @@ import TransactionPage from './pages/TransactionPage';
 import StocksPortofolioPage from './pages/StocksPortofolioPage';
 import StocksDetailsPage from './pages/StocksDetailsPage';
 import WalletPage from './pages/WalletPage';
+import TransferPage from './pages/TransferPage';
+import TransferToFriendPage from './pages/TransferToFriendPage';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +58,23 @@ const Stocks = () => {
   );
 };
 
+const Transfer = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="TransferPage"
+        component={TransferPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="TransferToFriendPage"
+        component={TransferToFriendPage}
+        options={{headerShown: false}}
+      />
+    </Stack.Navigator>
+  );
+}
+
 const Menu = () => {
   return (
     <Stack.Navigator initialRouteName="PrincipalScreen">
@@ -72,6 +91,11 @@ const Menu = () => {
       <Stack.Screen
         name="WalletPage"
         component={WalletPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Transfer"
+        component={Transfer}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

@@ -9,8 +9,6 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const baseUrl = 'http://10.0.2.2:8000';
-// const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-// const email = 'laurentiu@gmail.com';
 export default class PrincipalScreen extends React.Component {
     
     constructor(props) {
@@ -292,7 +290,7 @@ export default class PrincipalScreen extends React.Component {
                         </View>
 
                         <View style={styles.transferButton}>
-                            <TouchableOpacity onPress={() => alert("Transfer button pressed!")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('Transfer')}>
                                 <FontistoIcons name="arrow-swap" size={35} style={{left: 5, top: 5}}></FontistoIcons>
                             </TouchableOpacity>
                         </View>

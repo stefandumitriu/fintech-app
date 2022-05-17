@@ -5,9 +5,6 @@ import FlagIcon from 'react-native-ico-flags';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const baseUrl = 'http://10.0.2.2:8000';
-// const token = 'Token fbd34c2a78e48850fac59b15bc6cb01250033244';
-// const email = 'laurentiu@gmail.com';
-// const phone_number = '0712345678';
 
 const currency = (currency) => {
   if (currency === 'RON') {
