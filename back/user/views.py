@@ -77,10 +77,6 @@ class AccountView(APIView):
             #cards = Card.objects.filter(account__owner=user).all()
             if len(account) == 0:
                 return JsonResponse([], safe=False)
-            else:
-                serializer1 = AccountSerializer(account, many=True)
-                #serializer2 = CardSerializer(cards, many=True)
-                return Response(serializer1)
 
             serializer = AccountSerializer(account, many=True)
             return Response(serializer.data)
