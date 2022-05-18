@@ -101,7 +101,7 @@ export default class WalletPage extends React.Component {
                 Type: {account.item.acc_type}
               </Text>
               <Text style = {styles.detailsContent}>
-                Card expiration date: hardcoded
+                Card expiration date: {account.item.card_expiration_date}
               </Text>
               <Text style = {styles.detailsContent}>
                 Currency: {account.item.currency}
