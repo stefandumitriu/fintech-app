@@ -1,3 +1,4 @@
+from datetime import datetime
 import decimal
 import json
 
@@ -14,6 +15,8 @@ from rest_framework.authtoken.models import Token
 from .models import Transaction, ExternalTransaction
 from .serializer import TransactionSerializer, ExternalTransactionSerializer
 from user.models import Account, CustomUser
+
+from ionel import settings
 
 
 class TransactionView(APIView):
@@ -32,6 +35,17 @@ class TransactionView(APIView):
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             queryresult = Transaction.objects.filter(Q(sender__email__contains=user_param)
                                                      | Q(receiver__email__contains=user_param))
+            from_date = request.GET.get('from')
+            to_date = request.GET.get('to')
+            if from_date is not None:
+                from_date_formatted = datetime.strptime(from_date, "%d-%m-%Y")
+                queryresult = queryresult.filter(
+                    timestamp__gte=datetime(from_date_formatted.year, from_date_formatted.month,
+                                            from_date_formatted.day))
+            if to_date is not None:
+                to_date_formatted = datetime.strptime(to_date, "%d-%m-%Y")
+                queryresult = queryresult.filter(
+                    timestamp__lte=datetime(to_date_formatted.year, to_date_formatted.month, to_date_formatted.day))
             serializer = TransactionSerializer(queryresult, many=True)
             return Response(serializer.data)
         transactions = Transaction.objects.all()
@@ -80,6 +94,16 @@ class ExternalTransactionView(APIView):
             if user != auth_user:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
             queryresults = ExternalTransaction.objects.filter(client__email__contains=user_param)
+            from_date = request.GET.get('from')
+            to_date = request.GET.get('to')
+            if from_date is not None:
+                from_date_formatted = datetime.strptime(from_date, "%d-%m-%Y")
+                queryresults = queryresults.filter(
+                    timestamp__gte=datetime(from_date_formatted.year, from_date_formatted.month, from_date_formatted.day))
+            if to_date is not None:
+                to_date_formatted = datetime.strptime(to_date, "%d-%m-%Y")
+                queryresults = queryresults.filter(
+                    timestamp__lte=datetime(to_date_formatted.year, to_date_formatted.month, to_date_formatted.day))
             serializer = ExternalTransactionSerializer(queryresults, many=True)
             return Response(serializer.data)
         return Response(status=status.HTTP_400_BAD_REQUEST)
