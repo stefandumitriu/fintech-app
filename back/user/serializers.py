@@ -17,7 +17,6 @@ class AccountSerializer(serializers.ModelSerializer):
         model = Account
         fields = ['iban', 'acc_type', 'owner', 'balance', 'currency', 'card_expiration_date', 'card_number']
 
-
 class CardSerializer(serializers.ModelSerializer):
     account = AccountSerializer(required=True)
 

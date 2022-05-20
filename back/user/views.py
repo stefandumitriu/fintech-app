@@ -30,9 +30,7 @@ class UserView(APIView):
     permission_classes = [Or(IsPostRequest, IsAuthenticated)]
 
     def get(self, request):
-        users = CustomUser.objects.all()
-        serializer = CustomUserSerializer(users, many=True)
-        return Response(serializer.data)
+        return Response("Not allowed to get this resource", status=status.HTTP_403_FORBIDDEN)
 
     def post(self, request):
         data = JSONParser().parse(request)
@@ -40,8 +38,7 @@ class UserView(APIView):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
-        return Response({"error": serializer.errors,
-                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
@@ -49,7 +46,9 @@ def user_detail(request, phone):
     user = CustomUser.objects.get(phone_number=phone)
     if user is None:
         return Response(status=status.HTTP_404_NOT_FOUND)
-
+    request_user = Token.objects.get(key=request.auth).user
+    if user != request_user:
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
     if request.method == 'GET':
         serializer = CustomUserSerializer(user)
         return Response(serializer.data)
@@ -64,9 +63,7 @@ class AccountView(APIView):
 
         if email is None:
             accounts = Account.objects.all()
-            #cards = Card.objects.all()
             serializer1 = AccountSerializer(accounts, many=True)
-            #serializer2 = CardSerializer(cards, many=True)
             return Response(serializer1.data)
         else:
             user = CustomUser.objects.get(email=email)
@@ -74,21 +71,19 @@ class AccountView(APIView):
                 return Response(status=status.HTTP_404_NOT_FOUND)
 
             account = Account.objects.filter(owner=user).all()
-            #cards = Card.objects.filter(account__owner=user).all()
             if len(account) == 0:
                 return JsonResponse([], safe=False)
 
             serializer = AccountSerializer(account, many=True)
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = JSONParser().parse(request)
         serializer = AccountSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response({"error": serializer.errors,
-                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class VaultView(APIView):
     authentication_classes = [authentication.TokenAuthentication]
@@ -97,16 +92,15 @@ class VaultView(APIView):
     def get(self):
         vaults = Vault.objects.all()
         serializer = VaultSerializer(vaults, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def post(self, request):
         data = JSONParser().parse(request)
         serializer = VaultSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response({"error": serializer.errors,
-                         "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -116,8 +110,7 @@ def get_card(req):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data)
-    return Response({"error": serializer.errors,
-                     "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
 def login_request(req):
@@ -129,9 +122,9 @@ def login_request(req):
         token, created = Token.objects.get_or_create(user=user)
         user.last_login = str(timezone.now().strftime("%Y-%m-%d %H:%M:%S"))
         user.save()
-        return JsonResponse({"token": token.key})
+        return Response({"token": token.key}, status=status.HTTP_200_OK)
     else:
-        return HttpResponse("Login failed", status=400)
+        return Response("Login failed", status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])

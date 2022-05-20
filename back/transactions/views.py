@@ -9,10 +9,11 @@ from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.authtoken.models import Token
 
-from .models import Transaction
-from .serializer import TransactionSerializer
-from user.models import Account
+from .models import Transaction, ExternalTransaction
+from .serializer import TransactionSerializer, ExternalTransactionSerializer
+from user.models import Account, CustomUser
 
 
 class TransactionView(APIView):
@@ -22,6 +23,13 @@ class TransactionView(APIView):
     def get(self, request):
         user_param = request.GET.get('user')
         if user_param is not None:
+            try:
+                user = CustomUser.objects.get(email=user_param)
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            auth_user = Token.objects.get(key=request.auth).user
+            if user != auth_user:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
             queryresult = Transaction.objects.filter(Q(sender__email__contains=user_param)
                                                      | Q(receiver__email__contains=user_param))
             serializer = TransactionSerializer(queryresult, many=True)
@@ -55,6 +63,54 @@ class TransactionView(APIView):
             return Response(serializer.data)
         return Response({"error": serializer.errors,
                          "status": status.HTTP_203_NON_AUTHORITATIVE_INFORMATION})
+
+
+class ExternalTransactionView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user_param = request.GET.get('user')
+        if user_param is not None:
+            try:
+                user = CustomUser.objects.get(email=user_param)
+            except:
+                return Response(status=status.HTTP_404_NOT_FOUND)
+            auth_user = Token.objects.get(key=request.auth).user
+            if user != auth_user:
+                return Response(status=status.HTTP_401_UNAUTHORIZED)
+            queryresults = ExternalTransaction.objects.filter(client__email__contains=user_param)
+            serializer = ExternalTransactionSerializer(queryresults, many=True)
+            return Response(serializer.data)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        data = JSONParser().parse(request)
+        serializer = ExternalTransactionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            client_accounts = Account.objects.filter(owner__email__contains=serializer.data['client'])
+            account_with_needed_currency = client_accounts.filter(currency__contains=serializer.data['currency'])
+            if account_with_needed_currency.exists():
+                if serializer.data['type'] == 'OUTGOING':
+                    Account.objects.filter(id=account_with_needed_currency[0].id).update(
+                        balance=F('balance') - serializer.data['amount'])
+                else:
+                    Account.objects.filter(id=account_with_needed_currency[0].id).update(
+                        balance=F('balance') + serializer.data['amount'])
+            else:
+                if serializer.data['type'] == 'OUTGOING':
+                    acc = Account.objects.get(id=client_accounts[0].id)
+                    acc.balance -= exchange(serializer.data['currency'], acc.currency, serializer.data['amount'])
+                    acc.save()
+                else:
+                    acc = Account.objects.get(id=client_accounts[0].id)
+                    acc.balance += exchange(serializer.data['currency'], acc.currency, serializer.data['amount'])
+                    acc.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
 
 def exchange(from_currency, to_currency, amount):
