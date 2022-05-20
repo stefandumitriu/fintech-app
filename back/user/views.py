@@ -122,9 +122,9 @@ def login_request(req):
         token, created = Token.objects.get_or_create(user=user)
         user.last_login = str(timezone.now().strftime("%Y-%m-%d %H:%M:%S"))
         user.save()
-        return Response({"token": token.key}, status=status.HTTP_200_OK)
+        return JsonResponse({"token": token.key}, status=status.HTTP_200_OK)
     else:
-        return Response("Login failed", status=status.HTTP_404_NOT_FOUND)
+        return HttpResponse("Login failed", status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])

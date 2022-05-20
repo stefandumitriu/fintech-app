@@ -4,7 +4,6 @@ from .models import CustomUser
 def authenticate(phone_number=None, password=None):
 	try:
 		user = CustomUser.objects.get(phone_number=phone_number)
-		print(user.password)
 		if user.password == password:
 			return user
 	except CustomUser.DoesNotExist:
