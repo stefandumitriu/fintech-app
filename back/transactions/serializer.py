@@ -11,7 +11,7 @@ class TransactionSerializer(serializers.ModelSerializer):
                                          slug_field="email")
     receiver = serializers.SlugRelatedField(many=False, read_only=False, queryset=CustomUser.objects.all(),
                                          slug_field="email")
-    timestamp = serializers.DateTimeField(format=settings.DATETIME_FORMAT)
+    timestamp = serializers.DateTimeField(format=settings.DATETIME_FORMAT, default=timezone.now)
 
     class Meta:
         model = Transaction
