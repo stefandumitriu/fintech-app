@@ -12,6 +12,7 @@ import StocksDetailsPage from './pages/StocksDetailsPage';
 import WalletPage from './pages/WalletPage';
 import TransferPage from './pages/TransferPage';
 import TransferToFriendPage from './pages/TransferToFriendPage';
+import SpendingAnalysisPage from './pages/SpendingAnalysisPage';
 
 const Stack = createStackNavigator();
 
@@ -96,6 +97,11 @@ const Menu = () => {
       <Stack.Screen
         name="Transfer"
         component={Transfer}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen 
+        name="SpendingAnalysisPage"
+        component={SpendingAnalysisPage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

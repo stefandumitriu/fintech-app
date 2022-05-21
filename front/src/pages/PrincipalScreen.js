@@ -302,7 +302,7 @@ export default class PrincipalScreen extends React.Component {
                         </View>
 
                         <View style={styles.spendingAnalysisButton}>
-                            <TouchableOpacity onPress={() => alert("SpendingAnalysis button pressed!")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate('SpendingAnalysisPage')}>
                                 <OcticonsIcons name="graph" size={40} style={{left: 5, top: 2}}></OcticonsIcons>
                             </TouchableOpacity>
                         </View>
