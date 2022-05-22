@@ -143,13 +143,25 @@ class AccountStatementView(APIView):
                                      from_date.strftime("%d-%m-%Y"), date.today().strftime('%d-%m-%Y'), request.auth).text)
             yCursor = 620
             for json_obj in json_data:
-                print(json_obj)
                 amount = json_obj['amount']
                 p.drawString(50, yCursor, json_obj['sender'] + "  ->  " + json_obj['receiver'])
                 if json_obj['sender'] == auth_user.email:
                     p.drawString(400, yCursor, "-" + amount + " " + json_obj['currency'])
                 else:
                     p.drawString(400, yCursor, amount + " " + json_obj['currency'])
+                p.drawString(400, yCursor - 20, json_obj['timestamp'])
+                p.line(50, yCursor - 40, 500, yCursor - 40)
+                yCursor -= 60
+
+            external_json_data = json.loads(get_user_transactions_external(auth_user.email,
+                                     from_date.strftime("%d-%m-%Y"), date.today().strftime('%d-%m-%Y'), request.auth).text)
+            for json_obj in external_json_data:
+                if json_obj['type'] == 'OUTGOING':
+                    p.drawString(50, yCursor, json_obj['client'] + "  ->  " + json_obj['external_peer'])
+                    p.drawString(400, yCursor, "-" + json_obj['amount'] + " " + json_obj['currency'])
+                else:
+                    p.drawString(50, yCursor, json_obj['external_peer'] + "  ->  " + json_obj['client'])
+                    p.drawString(400, yCursor, json_obj['amount'] + " " + json_obj['currency'])
                 p.drawString(400, yCursor - 20, json_obj['timestamp'])
                 p.line(50, yCursor - 40, 500, yCursor - 40)
                 yCursor -= 60
@@ -218,4 +230,16 @@ def get_user_transactions(email, from_date, to_date, token):
 
     response = requests.request("GET", url, headers=headers, data={})
     return response
+
+
+def get_user_transactions_external(email, from_date, to_date, token):
+
+    url = f"http://127.0.0.1:8000/transactions/external/?user={email}&from={from_date}&to={to_date}"
+    headers = {
+        "Authorization": f"Token {token}"
+    }
+
+    response = requests.request("GET", url, headers=headers, data={})
+    return response
+
 
