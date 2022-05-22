@@ -28,7 +28,7 @@ export default class TransferPage extends Component {
                     </View>
 
                     <View style = {styles.recentTransactions}>
-                        <TouchableOpacity onPress={() => alert("Transfer with NFC tile pressed!")}>
+                        <TouchableOpacity onPress={() => alert("Transfer with NFC will be available soon!")}>
                             <MaterialCommunityIcons name="nfc" size={30} style={{left:"10%", top: "40%"}}></MaterialCommunityIcons>
                             <Text style={{fontSize: 20, fontWeight: "bold", alignSelf: 'center', left:"7%", top: "-5%"}}>
                                 Transfer with NFC
