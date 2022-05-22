@@ -1,4 +1,9 @@
-from django.http import HttpResponse, JsonResponse
+import io
+from datetime import date
+from dateutil.relativedelta import relativedelta
+from reportlab.pdfgen import canvas
+
+from django.http import HttpResponse, JsonResponse, FileResponse
 from django.utils import timezone, dateformat
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import authentication, status, permissions
@@ -104,6 +109,57 @@ class VaultView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class AccountStatementView(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        range = request.GET.get('range')
+        account_currency = request.GET.get('currency')
+        auth_user = Token.objects.get(key=request.auth).user
+        account = Account.objects.filter(owner=auth_user).filter(currency=account_currency)
+        from_date = None
+        if range is not None:
+            if range == '1m':
+                from_date = date.today() + relativedelta(months=-1)
+            elif range == '3m':
+                from_date = date.today() + relativedelta(months=-3)
+            elif range == '6m':
+                 from_date = date.today() + relativedelta(months=-6)
+            else:
+                from_date = None
+        buffer = io.BytesIO()
+
+        p = canvas.Canvas(buffer)
+        p.drawString(200, 800, "Account Statement")
+        p.drawString(50, 760, "Owner Name: " + auth_user.first_name + " " + auth_user.last_name)
+        p.drawString(50, 740, "Account IBAN: " + account[0].iban)
+        p.drawString(50, 720, "Account Currency: " + account[0].currency)
+        p.drawString(50, 700, "Generated on: " + date.today().strftime('%d-%m-%Y'))
+
+        if from_date is not None:
+            p.drawString(160, 660, "Showing transactions from: " + from_date.strftime("%d-%m-%Y"))
+            json_data = json.loads(get_user_transactions(auth_user.email,
+                                     from_date.strftime("%d-%m-%Y"), date.today().strftime('%d-%m-%Y'), request.auth).text)
+            yCursor = 620
+            for json_obj in json_data:
+                print(json_obj)
+                amount = json_obj['amount']
+                p.drawString(50, yCursor, json_obj['sender'] + "  ->  " + json_obj['receiver'])
+                if json_obj['sender'] == auth_user.email:
+                    p.drawString(400, yCursor, "-" + amount + " " + json_obj['currency'])
+                else:
+                    p.drawString(400, yCursor, amount + " " + json_obj['currency'])
+                p.drawString(400, yCursor - 20, json_obj['timestamp'])
+                p.line(50, yCursor - 40, 500, yCursor - 40)
+                yCursor -= 60
+        p.showPage()
+        p.save()
+
+        buffer.seek(0)
+        return FileResponse(buffer, as_attachment=True, filename='acc_statement.pdf')
+
+
 @api_view(['POST'])
 def get_card(req):
     data = JSONParser().parse(req)
@@ -151,3 +207,15 @@ def convert_amount(req):
                              "result": json_obj["result"]})
     else:
         return response
+
+
+def get_user_transactions(email, from_date, to_date, token):
+
+    url = f"http://127.0.0.1:8000/transactions/?user={email}&from={from_date}&to={to_date}"
+    headers = {
+        "Authorization": f"Token {token}"
+    }
+
+    response = requests.request("GET", url, headers=headers, data={})
+    return response
+
