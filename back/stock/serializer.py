@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Stock, StockAccount
 from user.models import CustomUser
 
+
 class StockSerializer(serializers.ModelSerializer):
     class Meta:
         model = Stock
