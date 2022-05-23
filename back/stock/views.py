@@ -1,4 +1,5 @@
 import json
+import time
 
 from django.core import serializers
 from rest_framework import viewsets, authentication, status
@@ -132,10 +133,6 @@ class StockAccountViewSet(APIView):
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
-
-
-
 @api_view(['GET'])
 def stock_detail(request, symbol):
 
@@ -146,6 +143,23 @@ def stock_detail(request, symbol):
     if request.method == 'GET':
         serializer = StockSerializer(stock)
         return Response(serializer.data)
+
+
+@api_view(['GET'])
+def stock_history(request, symbol):
+    data = {}
+
+    url = f"https://yfapi.net/v8/finance/chart/{symbol}?range=3mo&interval=1wk"
+    headers = {
+        'x-api-key': 'VDxW3SmOhC9ZhRThKnnJA9rHYzHBc0ru4lAzRUst'
+    }
+    response = requests.request("GET", url, headers=headers)
+    json_obj = json.loads(response.text)
+    data['date'] = []
+    for timestamps in json_obj['chart']['result'][0]['timestamp']:
+        data['date'].append(time.strftime('%m-%d-%Y', time.localtime(timestamps)))
+    data['price'] = json_obj['chart']['result'][0]['indicators']['quote'][0]['close']
+    return Response(json.loads(json.dumps(data)), status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])

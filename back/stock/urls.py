@@ -6,6 +6,7 @@ from django.urls import path
 urlpatterns = [
     path('', views.StockListViewSet.as_view()),
     path('<str:symbol>', views.stock_detail),
+    path('<str:symbol>/history', views.stock_history),
     path('search/', views.stock_name_filter),
     path('account/', views.StockAccountViewSet.as_view())
 ]
