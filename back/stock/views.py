@@ -2,13 +2,16 @@ import json
 
 from django.core import serializers
 from rest_framework import viewsets, authentication, status
+from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Stock
-from .serializer import StockSerializer
+from .models import Stock, StockAccount
+from .serializer import StockSerializer, StockAccountSerializer
+from user.models import Account
+from transactions.views import exchange
 import requests
 
 stocks = ["AAPL", "MSFT", "AMZN", "TSLA", "GOOGL",
@@ -68,6 +71,71 @@ class StockListViewSet(APIView):
         return Response(serializer.data)
 
 
+class StockAccountViewSet(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, req):
+        auth_user = Token.objects.get(key=req.auth).user
+        if auth_user is not None:
+            stocks_owned = StockAccount.objects.filter(owner=auth_user)
+            serializer = StockAccountSerializer(stocks_owned, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    def post(self, req):
+        auth_user = Token.objects.get(key=req.auth).user
+        json_data = json.loads(req.body)
+        stock_owned = StockAccount.objects.filter(owner=auth_user).filter(stock__symbol=json_data['symbol']).first()
+        if not stock_owned and json_data['operation'] == 'buy':
+            serializer = StockAccountSerializer(data={'owner': auth_user.email, 'stock': json_data['symbol'],
+                                                      'quantity': json_data['quantity']})
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif not stock_owned and json_data['operation'] == 'sell':
+            return Response({'error': 'You don\'t own this stock!'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        elif json_data['operation'] == 'buy':
+            user_account = Account.objects.filter(owner=auth_user).filter(currency='USD').first()
+            if not user_account:
+                user_account = Account.objects.filter(owner=auth_user).first()
+                converted_amount = exchange('USD', user_account.currency,
+                                            json_data['quantity'] * stock_owned.stock.ask_price)
+                if user_account.balance < converted_amount:
+                    return Response({'error': 'Not enough balance in your account!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            else:
+                if user_account.balance < json_data['quantity'] * stock_owned.stock.ask_price:
+                    return Response({'error': 'Not enough balance in your account!'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+            serializer = StockAccountSerializer(stock_owned,
+                                                data={'quantity': stock_owned.quantity + json_data['quantity']},
+                                                partial=True)
+            make_stock_order(auth_user.email, json_data['quantity'] * stock_owned.stock.ask_price,
+                             'OUTGOING', req.auth)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        elif json_data['operation'] == 'sell':
+            if json_data['quantity'] > stock_owned.quantity:
+                return Response({'error': 'Not enough stock quantity'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            serializer = StockAccountSerializer(stock_owned,
+                                                data={'quantity': stock_owned.quantity - json_data['quantity']},
+                                                partial=True)
+            make_stock_order(auth_user.email, json_data['quantity'] * stock_owned.stock.bid_price,
+                             'INCOMING', req.auth)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
 @api_view(['GET'])
 def stock_detail(request, symbol):
 
@@ -91,3 +159,18 @@ def stock_name_filter(request):
             json_obj = json.loads(serializer)
             return Response(json_obj)
         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+def make_stock_order(email, amount, type, token):
+
+    url = f"http://127.0.0.1:8000/transactions/external/"
+    headers = {
+        "Authorization": f"Token {token}"
+    }
+    response = requests.post(url, headers=headers, json={
+        'client': email,
+        'amount': amount,
+        'currency': 'USD',
+        'type': type,
+        'external_peer': 'Ionel Broker'})
+    return response

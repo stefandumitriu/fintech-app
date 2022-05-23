@@ -1,4 +1,5 @@
 from django.db import models
+from user.models import CustomUser
 
 # Create your models here.
 
@@ -19,3 +20,9 @@ class Stock(models.Model):
     objects = models.Manager()
 
 
+class StockAccount(models.Model):
+    stock = models.ForeignKey(Stock, on_delete=models.CASCADE)
+    owner = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    quantity = models.FloatField()
+
+    objects = models.Manager()
