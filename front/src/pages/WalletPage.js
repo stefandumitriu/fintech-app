@@ -139,37 +139,6 @@ export default class WalletPage extends React.Component {
             horizontal
           />
         </ScrollView>
-        <View style={styles.menuBar}>
-          <View style={styles.homeButton}>
-                  <TouchableOpacity onPress={() => alert("Home button pressed!")}>
-                      <FontAwesomeIcon name="home" size={40} style={{left: 0, top: 2}}></FontAwesomeIcon>
-                  </TouchableOpacity>
-          </View>
-
-          <View style={styles.stocksButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('Stocks')}>
-                  <FeatherIcons name="trending-up" size={40} style={{left: 5, top: 3}}></FeatherIcons>
-              </TouchableOpacity>
-          </View>
-
-          <View style={styles.transferButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('Transfer')}>
-                  <FontistoIcons name="arrow-swap" size={35} style={{left: 5, top: 5}}></FontistoIcons>
-              </TouchableOpacity>
-          </View>
-
-          <View style={styles.walletButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('WalletPage')}>
-                  <FontistoIcons name="wallet" size={35} style={{left: 5, top: 5}}></FontistoIcons>
-              </TouchableOpacity>
-          </View>
-
-          <View style={styles.spendingAnalysisButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('SpendingAnalysisPage')}>
-                  <OcticonsIcons name="graph" size={40} style={{left: 5, top: 2}}></OcticonsIcons>
-              </TouchableOpacity>
-          </View>
-        </View>
       </>
     );
   }
@@ -179,54 +148,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: StatusBar.currentHeight || 0,
-  },
-  homeButton: {
-      width: 45,
-      height: 45,
-      position: 'absolute',
-      top: "5%",
-      right: "85%",
-      borderRadius: 10,
-  },
-  menuBar: {
-      backgroundColor: "#7de24e",
-      width: '100%',
-      height: 55,
-      flex: 0.08,
-      justifyContent: "flex-end",
-      flexDirection: "row"
-  },
-  stocksButton: {
-      width: 45,
-      height: 45,
-      position: 'absolute',
-      top: "5%",
-      right: "65%",
-      borderRadius: 10,
-  },
-  transferButton: {
-      width: 45,
-      height: 45,
-      position: 'absolute',
-      top: "5%",
-      right: "45%",
-      borderRadius: 10,
-  },
-  walletButton: {
-      width: 45,
-      height: 45,
-      position: 'absolute',
-      top: "5%",
-      right: "25%",
-      borderRadius: 10,
-  },
-  spendingAnalysisButton: {
-      width: 45,
-      height: 45,
-      position: 'absolute',
-      top: "0.5%",
-      right: "5%",
-      borderRadius: 10,
   },
   debitCardImage: {
     width: 270, 
@@ -240,7 +161,7 @@ const styles = StyleSheet.create({
       height: 150,
       borderRadius: 20,
       marginHorizontal: 50,
-      marginBottom: 40,
+      marginBottom: 20,
       marginTop: 30,
       alignSelf: 'center',
   },
