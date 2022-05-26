@@ -33,7 +33,7 @@ class TransactionView(APIView):
             auth_user = Token.objects.get(key=request.auth).user
             if user != auth_user:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
-            queryresult = Transaction.objects.filter(Q(sender__email__contains=user_param)
+            queryresult = Transaction.objects.order_by('-timestamp').filter(Q(sender__email__contains=user_param)
                                                      | Q(receiver__email__contains=user_param))
             from_date = request.GET.get('from')
             to_date = request.GET.get('to')
@@ -93,7 +93,7 @@ class ExternalTransactionView(APIView):
             auth_user = Token.objects.get(key=request.auth).user
             if user != auth_user:
                 return Response(status=status.HTTP_401_UNAUTHORIZED)
-            queryresults = ExternalTransaction.objects.filter(client__email__contains=user_param)
+            queryresults = ExternalTransaction.objects.order_by('-timestamp').filter(client__email__contains=user_param)
             from_date = request.GET.get('from')
             to_date = request.GET.get('to')
             if from_date is not None:

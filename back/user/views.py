@@ -223,7 +223,7 @@ def convert_amount(req):
 
 def get_user_transactions(email, from_date, to_date, token):
 
-    url = f"http://127.0.0.1:8000/transactions/?user={email}&from={from_date}&to={to_date}"
+    url = f"http://3.70.21.159:8000/transactions/?user={email}&from={from_date}&to={to_date}"
     headers = {
         "Authorization": f"Token {token}"
     }
@@ -234,7 +234,7 @@ def get_user_transactions(email, from_date, to_date, token):
 
 def get_user_transactions_external(email, from_date, to_date, token):
 
-    url = f"http://127.0.0.1:8000/transactions/external/?user={email}&from={from_date}&to={to_date}"
+    url = f"http://3.70.21.159:8000/transactions/external/?user={email}&from={from_date}&to={to_date}"
     headers = {
         "Authorization": f"Token {token}"
     }
