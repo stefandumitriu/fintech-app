@@ -47,7 +47,7 @@ const LoginScreen = ({navigation}) => {
     initialValues: { phone_number: '', email: '', password: '' },
     onSubmit: (values, actions) => axios({
       method: "POST",
-      url: "http://10.0.2.2:8000/login/",
+      url: "http://3.70.21.159:8000/login/",
       data: {
         phone_number: values.phone_number, 
         password: values.password

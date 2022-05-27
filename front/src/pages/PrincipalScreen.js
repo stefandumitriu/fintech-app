@@ -8,7 +8,7 @@ import FlagIcon from 'react-native-ico-flags';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 export default class PrincipalScreen extends React.Component {
     
     constructor(props) {
@@ -21,6 +21,8 @@ export default class PrincipalScreen extends React.Component {
             token: null,
             email: null,
             isLoadingCredentials: true,
+            stocks:[],
+            isLoadingStocks: true
         }
     }
 
@@ -68,11 +70,25 @@ export default class PrincipalScreen extends React.Component {
         }
     }
 
+    async getStockAccountDetails() {
+        try {
+            const url = `${baseUrl}/stocks/account/?user=${this.state.email}`
+            const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
+            this.setState({
+                stocks: response.data,
+                isLoadingStocks: false
+            });
+        } catch (error) {
+            console.error(error);
+        }
+      }
+
     componentDidMount() {
         Promise.resolve(this.getUser())
             .then(() => {
                 this.getCurrentAccount();
                 this.getRecentTransactions();
+                this.getStockAccountDetails();
             });
     }
 
@@ -200,13 +216,17 @@ export default class PrincipalScreen extends React.Component {
         );
     }
     render() {
-        if (this.state.isLoadingCA == true || this.state.isLoadingRT == true || this.state.isLoadingCredentials == true) {
+        if (this.state.isLoadingCA == true || this.state.isLoadingRT == true || this.state.isLoadingCredentials == true || this.state.isLoadingStocks == true) {
             return (
                 <View>
                     <ActivityIndicator/>
                 </View>
             )
         } else {
+            var totalValue = 0;
+            for(var i = 0; i < this.state.stocks.length; i++) {
+                totalValue += this.state.stocks[i].total_value;
+            }
             return (
                 <>
                     <StatusBar backgroundColor='#7de24e'></StatusBar>
@@ -265,7 +285,7 @@ export default class PrincipalScreen extends React.Component {
                                         {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceStocks}>
-                                            hardcoded
+                                            ${totalValue}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceSafe}>
                                         hardcoded

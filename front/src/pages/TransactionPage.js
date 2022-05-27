@@ -4,7 +4,7 @@ import AntDesignIcons from 'react-native-vector-icons/AntDesign';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 // Tested to print transactions depending on an array
 export default class TransactionPage extends React.Component {
     
@@ -72,7 +72,8 @@ export default class TransactionPage extends React.Component {
                         <View key={recentTransaction.id}>
                             <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
-                                To: {recentTransaction.receiver}
+                                To: {recentTransaction.receiver}{"\n"}
+                                {recentTransaction.timestamp}
                             </Text>
                             <Text style={styles.amount}>
                                 - {currency} {recentTransaction.amount}
@@ -84,7 +85,8 @@ export default class TransactionPage extends React.Component {
                         <View key={recentTransaction.id}>
                             <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
-                                From: {recentTransaction.sender}
+                                From: {recentTransaction.sender}{"\n"}
+                                {recentTransaction.timestamp}
                             </Text>
                             <Text style={styles.amount}>
                                 {currency} {recentTransaction.amount}
@@ -114,15 +116,13 @@ const styles = StyleSheet.create({
     userText: {
         fontSize: 15,
         fontWeight: "bold",
-        alignSelf: 'center',
         top: "-2%",
-        left: "-5%"
+        left: "20%"
     },
     amount: {
         fontSize: 15,
         fontWeight: "bold",
-        alignSelf: 'center',
         top: "-26%",
-        left: "35%"
+        left: "75%"
     }
 })

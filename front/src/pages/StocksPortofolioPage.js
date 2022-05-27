@@ -1,16 +1,11 @@
 import {
   StyleSheet,
-  TextInput,
   View,
   Text,
-  ActivityIndicator,
-  Dimensions,
-  ScrollView,
   StatusBar,
-  Keyboard,
   TouchableOpacity,
-  KeyboardAvoidingView,
   FlatList,
+  ActivityIndicator,
 } from 'react-native';
 
 import { Entypo as Icon } from '@expo/vector-icons';
@@ -18,7 +13,7 @@ import React, {Component} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 
 export default class StocksPortofolioPage extends React.Component {
 
@@ -29,7 +24,8 @@ export default class StocksPortofolioPage extends React.Component {
         token: null,
         email: null,
         stocks:[],
-        totalValue: 0,
+        isLoadingCredentials: true,
+        isLoadingStocks: true,
     }
   }
 
@@ -42,6 +38,7 @@ export default class StocksPortofolioPage extends React.Component {
             this.setState({
                 token: currentUser.token,
                 email: currentUser.email,
+                isLoadingCredentials: false,
             });
         });       
     } catch (error) {
@@ -55,6 +52,7 @@ export default class StocksPortofolioPage extends React.Component {
         const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
         this.setState({
             stocks: response.data,
+            isLoadingStocks: false
         });
     } catch (error) {
         console.error(error);
@@ -68,54 +66,68 @@ export default class StocksPortofolioPage extends React.Component {
       });
   }
 
-  portofolioValue() {
-    for(var i; i < this.state.stocks.length; i++) {
-        this.state.totalValue += this.state.stocks[i].total_value;
+  returnOutput() {
+    var totalValue = 0;
+    for(var i = 0; i < this.state.stocks.length; i++) {
+        totalValue += this.state.stocks[i].total_value;
     }
+    return (
+      <>
+        {/*Portofolio Value*/}
+        <View>
+          <Text style={styles.text}>PORTOFOLIO</Text>
+          <Text style={styles.portofolioValue}>$ {totalValue}</Text>
+        </View>
+
+        {/*Stock WatchList*/}
+        <Text style={styles.text}>STOCKS</Text>
+        <FlatList
+              data={this.state.stocks}
+              keyExtractor={item=>item.stock}
+              renderItem={({item}) => (
+                  <View>
+                      <View style = {styles.stockExample}>
+                        <Text style={styles.stockName}>{item.stock}</Text>
+                        <Text style={styles.stockQuantity}>x{item.quantity}</Text>
+                        <Text style={styles.stockValue}>$ {item.total_value}</Text>
+                      </View>
+                  </View>
+              )}
+          />
+
+        {/*StatusBar*/}
+        <StatusBar backgroundColor='#7de24e'></StatusBar>
+        <View style={styles.menuBar}>
+          <View style={styles.stocksButton}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('StocksPortofolioPage')}>
+              <Icon name={'line-graph'} size={40} style={{left: 3, top: 2}}/>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.searchButton}>
+            <TouchableOpacity onPress={() => this.props.navigation.navigate('StocksSearchPage')}>
+              <Icon name={'magnifying-glass'} size={40} style={{left: 3, top: 2}}/>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </>
+    )
   }
 
   render() {
+    if (this.state.isLoadingStocks == true || this.state.isLoadingCredentials == true) {
+      return (
+          <View>
+              <ActivityIndicator/>
+          </View>
+      )
+    } else {
       return (
         <>
-          {/*Portofolio Value*/}
-          <View>
-            <Text style={styles.text}>PORTOFOLIO</Text>
-            <Text style={styles.portofolioValue}>$ {this.state.totalValue}</Text>
-          </View>
-
-          {/*Stock WatchList*/}
-          <Text style={styles.text}>STOCKS</Text>
-          <FlatList
-                data={this.state.stocks}
-                keyExtractor={item=>item.stock}
-                renderItem={({item}) => (
-                    <View>
-                        <View style = {styles.stockExample}>
-                          <Text style={styles.stockName}>{item.stock}</Text>
-                          <Text style={styles.stockQuantity}>x{item.quantity}</Text>
-                          <Text style={styles.stockValue}>$ {item.total_value}</Text>
-                        </View>
-                    </View>
-                )}
-            />
-
-          {/*StatusBar*/}
-          <StatusBar backgroundColor='#7de24e'></StatusBar>
-          <View style={styles.menuBar}>
-            <View style={styles.stocksButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('StocksPortofolioPage')}>
-                <Icon name={'line-graph'} size={40} style={{left: 3, top: 2}}/>
-              </TouchableOpacity>
-            </View>
-
-            <View style={styles.searchButton}>
-              <TouchableOpacity onPress={() => this.props.navigation.navigate('StocksSearchPage')}>
-                <Icon name={'magnifying-glass'} size={40} style={{left: 3, top: 2}}/>
-              </TouchableOpacity>
-            </View>
-          </View>
+          {this.returnOutput()}
         </>
       )
+    }
   }
 }
 
@@ -141,6 +153,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     top: 20,
     marginTop: 15,
+    marginBottom: 20
   },
   stockName: {
     fontSize: 20,

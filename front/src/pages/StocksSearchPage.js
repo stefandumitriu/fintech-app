@@ -3,13 +3,8 @@ import {
     TextInput,
     View,
     Text,
-    ActivityIndicator,
-    Dimensions,
-    ScrollView,
     StatusBar,
-    Keyboard,
     TouchableOpacity,
-    KeyboardAvoidingView,
     FlatList,
 } from 'react-native';
 
@@ -18,7 +13,7 @@ import React, {Component, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 
 const StocksSearchPage = ({navigation}) => {
 
