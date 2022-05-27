@@ -48,7 +48,7 @@ const SignUpPage = ({navigation}) => {
     initialValues: { first_name: '', last_name: '', email: '', password: '', age: '', address: '', phone_number: '' },
     onSubmit: (values, actions) => axios({
       method: "POST",
-      url: "http://10.0.2.2:8000/users/",
+      url: "http://3.70.21.159:8000/users/",
       data: values
     })
       .then(response => {

@@ -1,14 +1,10 @@
 import axios from 'axios';
 import React from 'react';
-import { ScrollView, View, FlatList, StyleSheet, Text, StatusBar, Image, TouchableOpacity} from 'react-native';
+import { ScrollView, View, FlatList, StyleSheet, Text, StatusBar, Image} from 'react-native';
 import FlagIcon from 'react-native-ico-flags';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import OcticonsIcons from 'react-native-vector-icons/Octicons';
-import FontistoIcons from 'react-native-vector-icons/Fontisto';
-import FeatherIcons from 'react-native-vector-icons/Feather';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 
 const currency = (currency) => {
   if (currency === 'RON') {

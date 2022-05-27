@@ -2,9 +2,6 @@ import React, {Component} from 'react';
 import { TouchableOpacity, View, StyleSheet, Text, StatusBar } from 'react-native';
 import FontistoIcons from 'react-native-vector-icons/Fontisto';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import OcticonsIcons from 'react-native-vector-icons/Octicons';
-import FeatherIcons from 'react-native-vector-icons/Feather';
 
 export default class TransferPage extends Component {
     constructor(props) {

@@ -5,10 +5,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {LineChart} from "react-native-chart-kit";
 import { Picker } from '@react-native-picker/picker';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 export default class SpendingAnalysisPage extends Component {
     calledOnce = false;
-    //data = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     constructor(props) {
         super(props);
         this.state = {

@@ -1,21 +1,14 @@
 import {
     StyleSheet,
-    TextInput,
     View,
     Text,
-    KeyboardAvoidingView,
-    Keyboard,
-    TouchableOpacity,
-    ScrollView,
-    FlatList,
 } from 'react-native';
   
-import { Entypo as Icon } from '@expo/vector-icons';
 import React, {Component, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
   
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 
 export default class StocksDetailsPage extends React.Component {
 
@@ -75,7 +68,9 @@ export default class StocksDetailsPage extends React.Component {
           <Text style={styles.stockName}>$ {this.state.stockInfo.market_price}</Text>
           <View style={styles.divider}/>
           <Text style={styles.stockBase}>Market Change</Text>
-          <Text style={styles.stockChange}>$ {this.state.stockInfo.market_change} ({this.state.stockInfo.market_change_percent}%)</Text>
+          <Text style={[styles.stockChange, this.state.stockInfo.market_change > 0 ? styles.stockPos : styles.stockNeg]}>
+            $ {this.state.stockInfo.market_change} ({this.state.stockInfo.market_change_percent}%)
+          </Text>
           <View style={styles.divider}/>
           <Text style={styles.stockBase}>Market Cap</Text>
           <Text style={styles.stockName}>$ {this.state.stockInfo.market_cap}</Text>
@@ -102,9 +97,14 @@ const styles = StyleSheet.create({
   },
   stockChange: {
     paddingHorizontal: 10,
-    color: '#24cc18',
     fontSize: 22,
     fontWeight: 'bold',
+  },
+  stockPos: {
+    color: '#24cc18'
+  },
+  stockNeg: {
+    color: '#ed2618'
   },
   divider: {
     marginTop: 10,

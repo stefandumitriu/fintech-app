@@ -4,7 +4,7 @@ import { View, StyleSheet, Text, StatusBar, Button, TextInput, ActivityIndicator
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseUrl = 'http://10.0.2.2:8000';
+const baseUrl = 'http://3.70.21.159:8000';
 export default class TransferPage extends Component {
     constructor(props) {
         super(props);
@@ -43,7 +43,7 @@ export default class TransferPage extends Component {
       doTransfer() {
         axios({
             method: "POST",
-            url: "http://10.0.2.2:8000/transactions/",
+            url: "http://3.70.21.159:8000/transactions/",
             data: {
                 amount: this.state.amount,
                 currency: this.state.currency,
