@@ -9,6 +9,7 @@ import PrincipalScreen from './pages/PrincipalScreen';
 import TransactionPage from './pages/TransactionPage';
 import StocksPortofolioPage from './pages/StocksPortofolioPage';
 import StocksDetailsPage from './pages/StocksDetailsPage';
+import StocksSearchPage from './pages/StocksSearchPage';
 import WalletPage from './pages/WalletPage';
 import TransferPage from './pages/TransferPage';
 import TransferToFriendPage from './pages/TransferToFriendPage';
@@ -53,6 +54,11 @@ const Stocks = () => {
       <Stack.Screen
         name="StocksDetailsPage"
         component={StocksDetailsPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="StocksSearchPage"
+        component={StocksSearchPage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

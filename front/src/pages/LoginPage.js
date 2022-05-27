@@ -16,6 +16,9 @@ import { useFormik } from 'formik';
 import { Entypo as Icon } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+const url = 'http://10.0.2.2:8000/login/'
+const awsUrl = 'http://3.70.21.159:8000'
+
 const LoginScreen = ({navigation}) => {
   const emailInputRef = createRef();
   const passwordInputRef = createRef();
