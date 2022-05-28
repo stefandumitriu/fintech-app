@@ -1,6 +1,7 @@
 import io
 from datetime import date
 from dateutil.relativedelta import relativedelta
+from django.contrib.auth.hashers import make_password
 from reportlab.pdfgen import canvas
 
 from django.http import HttpResponse, JsonResponse, FileResponse
@@ -39,6 +40,7 @@ class UserView(APIView):
 
     def post(self, request):
         data = JSONParser().parse(request)
+        data['password'] = make_password(data['password'])
         serializer = CustomUserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -64,23 +66,14 @@ class AccountView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        email = request.GET.get("user", None)
-
-        if email is None:
-            accounts = Account.objects.all()
-            serializer1 = AccountSerializer(accounts, many=True)
-            return Response(serializer1.data)
-        else:
-            user = CustomUser.objects.get(email=email)
-            if user is None:
-                return Response(status=status.HTTP_404_NOT_FOUND)
-
-            account = Account.objects.filter(owner=user).all()
+        auth_user = Token.objects.get(key=request.auth).user
+        if auth_user is not None:
+            account = Account.objects.filter(owner=auth_user).all()
             if len(account) == 0:
                 return JsonResponse([], safe=False)
-
             serializer = AccountSerializer(account, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
         data = JSONParser().parse(request)

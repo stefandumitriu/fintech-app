@@ -88,14 +88,7 @@ class StockAccountViewSet(APIView):
         auth_user = Token.objects.get(key=req.auth).user
         json_data = json.loads(req.body)
         stock_owned = StockAccount.objects.filter(owner=auth_user).filter(stock__symbol=json_data['symbol']).first()
-        if not stock_owned and json_data['operation'] == 'buy':
-            serializer = StockAccountSerializer(data={'owner': auth_user.email, 'stock': json_data['symbol'],
-                                                      'quantity': json_data['quantity']})
-            if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        elif not stock_owned and json_data['operation'] == 'sell':
+        if not stock_owned and json_data['operation'] == 'sell':
             return Response({'error': 'You don\'t own this stock!'},
                             status=status.HTTP_400_BAD_REQUEST)
         elif json_data['operation'] == 'buy':
@@ -103,7 +96,7 @@ class StockAccountViewSet(APIView):
             if not user_account:
                 user_account = Account.objects.filter(owner=auth_user).first()
                 converted_amount = exchange('USD', user_account.currency,
-                                            json_data['quantity'] * stock_owned.stock.ask_price)
+                                            json_data['quantity'] * Stock.objects.get(symbol=json_data['symbol']).ask_price)
                 if user_account.balance < converted_amount:
                     return Response({'error': 'Not enough balance in your account!'},
                                     status=status.HTTP_400_BAD_REQUEST)
@@ -111,13 +104,18 @@ class StockAccountViewSet(APIView):
                 if user_account.balance < json_data['quantity'] * stock_owned.stock.ask_price:
                     return Response({'error': 'Not enough balance in your account!'},
                                     status=status.HTTP_400_BAD_REQUEST)
-            serializer = StockAccountSerializer(stock_owned,
+            if not stock_owned:
+                serializer = StockAccountSerializer(data={'owner': auth_user.email, 'stock': json_data['symbol'],
+                                                          'quantity': json_data['quantity']})
+            else:
+                serializer = StockAccountSerializer(stock_owned,
                                                 data={'quantity': stock_owned.quantity + json_data['quantity']},
                                                 partial=True)
-            make_stock_order(auth_user.email, json_data['quantity'] * stock_owned.stock.ask_price,
-                             'OUTGOING', req.auth)
             if serializer.is_valid():
                 serializer.save()
+                make_stock_order(auth_user.email,
+                                 round(json_data['quantity'] * Stock.objects.get(symbol=json_data['symbol']).ask_price, 2),
+                                 'OUTGOING', req.auth)
                 return Response(serializer.data, status=status.HTTP_200_OK)
         elif json_data['operation'] == 'sell':
             if json_data['quantity'] > stock_owned.quantity:
@@ -126,10 +124,13 @@ class StockAccountViewSet(APIView):
             serializer = StockAccountSerializer(stock_owned,
                                                 data={'quantity': stock_owned.quantity - json_data['quantity']},
                                                 partial=True)
-            make_stock_order(auth_user.email, json_data['quantity'] * stock_owned.stock.bid_price,
-                             'INCOMING', req.auth)
             if serializer.is_valid():
                 serializer.save()
+                make_stock_order(auth_user.email,
+                                 round(json_data['quantity'] * Stock.objects.get(symbol=json_data['symbol']).bid_price, 2),
+                                 'INCOMING', req.auth)
+                if StockAccount.objects.filter(owner=auth_user).get(stock__symbol=json_data['symbol']).quantity == 0:
+                    StockAccount.objects.filter(owner=auth_user).get(stock__symbol=json_data['symbol']).delete()
                 return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -177,7 +178,7 @@ def stock_name_filter(request):
 
 def make_stock_order(email, amount, type, token):
 
-    url = f"http://127.0.0.1:8000/transactions/external/"
+    url = f"http://3.70.21.159:8000/transactions/external/"
     headers = {
         "Authorization": f"Token {token}"
     }
