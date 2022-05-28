@@ -76,7 +76,7 @@ export default class StocksPortofolioPage extends React.Component {
         {/*Portofolio Value*/}
         <View>
           <Text style={styles.text}>PORTOFOLIO</Text>
-          <Text style={styles.portofolioValue}>$ {totalValue}</Text>
+          <Text style={styles.portofolioValue}>$ {totalValue.toFixed(2)}</Text>
         </View>
 
         {/*Stock WatchList*/}
@@ -88,8 +88,8 @@ export default class StocksPortofolioPage extends React.Component {
                   <View>
                       <View style = {styles.stockExample}>
                         <Text style={styles.stockName}>{item.stock}</Text>
-                        <Text style={styles.stockQuantity}>x{item.quantity}</Text>
-                        <Text style={styles.stockValue}>$ {item.total_value}</Text>
+                        <Text style={styles.stockQuantity}>x{item.quantity.toFixed(6)}</Text>
+                        <Text style={styles.stockValue}>$ {item.total_value.toFixed(2)}</Text>
                       </View>
                   </View>
               )}

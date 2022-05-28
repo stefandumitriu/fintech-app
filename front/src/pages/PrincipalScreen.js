@@ -285,7 +285,7 @@ export default class PrincipalScreen extends React.Component {
                                         {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceStocks}>
-                                            ${totalValue}
+                                            ${totalValue.toFixed(2)}
                                         </Text>
                                     <Text style = {styles.amountOverallBalanceSafe}>
                                         hardcoded
