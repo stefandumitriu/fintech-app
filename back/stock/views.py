@@ -117,6 +117,7 @@ class StockAccountViewSet(APIView):
                                  round(json_data['quantity'] * Stock.objects.get(symbol=json_data['symbol']).ask_price, 2),
                                  'OUTGOING', req.auth)
                 return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         elif json_data['operation'] == 'sell':
             if json_data['quantity'] > stock_owned.quantity:
                 return Response({'error': 'Not enough stock quantity'},
@@ -132,6 +133,7 @@ class StockAccountViewSet(APIView):
                 if StockAccount.objects.filter(owner=auth_user).get(stock__symbol=json_data['symbol']).quantity == 0:
                     StockAccount.objects.filter(owner=auth_user).get(stock__symbol=json_data['symbol']).delete()
                 return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET'])
