@@ -13,11 +13,20 @@ class AccountSerializer(serializers.ModelSerializer):
     owner = serializers.SlugRelatedField(many=False, read_only=False, queryset=CustomUser.objects.all(),
                                          slug_field="email")
     iban = serializers.CharField(required=False)
-    card_expiration_date = serializers.DateTimeField(format="%m/%Y")
+    card_expiration_date = serializers.DateTimeField(format="%m/%Y", required=False)
+
 
     class Meta:
         model = Account
         fields = ['iban', 'acc_type', 'owner', 'balance', 'currency', 'card_expiration_date', 'card_number']
+
+
+    def to_representation(self, instance):
+        ret = super(AccountSerializer, self).to_representation(instance)
+        if instance.acc_type == "SVG":
+            ret['goal'] = instance.goal
+            ret['deadline_date'] = instance.deadline_date.strftime("%Y-%m-%d")
+        return ret
 
 
 class CardSerializer(serializers.ModelSerializer):

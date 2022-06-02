@@ -57,6 +57,8 @@ class Account(models.Model):
     last_updated_time = models.DateTimeField(auto_now=True)
     card_expiration_date = models.DateTimeField(null=True)
     card_number = models.CharField(max_length=16, unique=True, null=True)
+    deadline_date = models.DateTimeField(null=True)
+    goal = models.DecimalField(max_digits=20, decimal_places=2, default=0)
 
     objects = models.Manager()
 
@@ -66,6 +68,9 @@ class Account(models.Model):
         if self.acc_type == self.CARD:
             self.card_expiration_date = datetime.datetime.now() + datetime.timedelta(days=1461)
             self.card_number = get_random_string(length=16, allowed_chars='1234567890')
+        if self.deadline_date is None and self.acc_type == self.SAVINGS or self.acc_type == 'Savings':
+            self.deadline_date = datetime.datetime.now() + datetime.timedelta(days=90)
+            self.goal = 1500
         super(Account, self).save(*args, **kwargs)
 
 
