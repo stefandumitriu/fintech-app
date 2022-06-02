@@ -32,7 +32,7 @@ const Auth = () => {
         options={{
           title: 'Sign Up',
           headerStyle: {
-            backgroundColor: '#7de24e',
+            backgroundColor: '#11CB76',
           },
           headerTintColor: '#fff',
           headerTitleStyle: {

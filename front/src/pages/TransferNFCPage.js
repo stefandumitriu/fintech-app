@@ -96,7 +96,7 @@ export default class TransferPage extends Component {
         } else {
             return (
                 <>
-                    <StatusBar backgroundColor='#7de24e'></StatusBar>
+                    <StatusBar backgroundColor='#11CB76'></StatusBar>
                     <View style={styles.container}>
                         <Text style={{fontSize: 35, fontWeight: "bold", alignSelf: 'center', top: "7%"}}>
                                         Transfer with NFC
@@ -125,7 +125,7 @@ export default class TransferPage extends Component {
                             <Button
                             onPress={() => this.setModalVisible(!this.state.modalVisible)}
                             title="Confirm Transfer"
-                            color="#7de24e"
+                            color="#11CB76"
                             />
                         </View>
                     </View>

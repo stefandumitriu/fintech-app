@@ -96,7 +96,7 @@ export default class StocksPortofolioPage extends React.Component {
           />
 
         {/*StatusBar*/}
-        <StatusBar backgroundColor='#7de24e'></StatusBar>
+        <StatusBar backgroundColor='#11CB76'></StatusBar>
         <View style={styles.menuBar}>
           <View style={styles.stocksButton}>
             <TouchableOpacity onPress={() => this.props.navigation.navigate('StocksPortofolioPage')}>
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   menuBar: {
-    backgroundColor: "#7de24e",
+    backgroundColor: "#11CB76",
     width: '100%',
     height: 50,
     bottom: "0%",

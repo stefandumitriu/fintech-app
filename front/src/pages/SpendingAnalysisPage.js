@@ -138,7 +138,7 @@ export default class SpendingAnalysisPage extends Component {
                     yAxisLabel="$"
                     yAxisInterval={1} // optional, defaults to 1
                     chartConfig={{
-                        backgroundColor: "#7de24e",
+                        backgroundColor: "#11CB76",
                         backgroundGradientFrom: "#fb8c00",
                         backgroundGradientTo: "#ffa726",
                         decimalPlaces: 2, // optional, defaults to 2dp

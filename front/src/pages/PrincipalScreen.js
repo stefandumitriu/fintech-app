@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, StatusBar, Image, ActivityIndicator} from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, StatusBar, Image, ActivityIndicator, FlatList} from 'react-native';
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import OcticonsIcons from 'react-native-vector-icons/Octicons';
 import FontistoIcons from 'react-native-vector-icons/Fontisto';
@@ -7,6 +7,8 @@ import FeatherIcons from 'react-native-vector-icons/Feather';
 import FlagIcon from 'react-native-ico-flags';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Font from 'expo-font';
+
 
 const baseUrl = 'http://3.70.21.159:8000';
 export default class PrincipalScreen extends React.Component {
@@ -22,10 +24,18 @@ export default class PrincipalScreen extends React.Component {
             email: null,
             isLoadingCredentials: true,
             stocks:[],
-            isLoadingStocks: true
+            isLoadingStocks: true,
+            accounts: null,
         }
     }
 
+    async loadFonts() {
+        await Font.loadAsync({
+            ProximaNova: require('../assets/fonts/Proxima-Nova-Font.otf'),
+    });
+        this.setState({ fontsLoaded: true });
+    }
+      
     async getUser() {
         try {
           const savedUser = await AsyncStorage.getItem("loginInfo")
@@ -41,7 +51,7 @@ export default class PrincipalScreen extends React.Component {
         } catch (error) {
           console.log(error);
         }
-      };
+    };
 
     async getCurrentAccount() {
         try {
@@ -81,7 +91,20 @@ export default class PrincipalScreen extends React.Component {
         } catch (error) {
             console.error(error);
         }
-      }
+    }
+    
+    async getAccounts() {
+    try {
+        const url = `${baseUrl}/accounts/?user=${this.state.email}`
+        const response = await axios.get(url, {headers: {Authorization: this.state.token, "Content-Type": "application/json"}})
+            this.setState({
+                accounts: response.data,
+                isLoading: false
+            });
+    } catch (error) {
+        console.error(error);
+    }
+    }
 
     componentDidMount() {
         Promise.resolve(this.getUser())
@@ -89,6 +112,8 @@ export default class PrincipalScreen extends React.Component {
                 this.getCurrentAccount();
                 this.getRecentTransactions();
                 this.getStockAccountDetails();
+                this.getAccounts();
+                this.loadFonts();
             });
     }
 
@@ -215,6 +240,37 @@ export default class PrincipalScreen extends React.Component {
             </View>
         );
     }
+
+    renderItem (account) {
+        return (
+          <View>
+                <View style={styles.detailsTile}>
+                    <Text style = {styles.cardNumber}>
+                        **** {account.item.card_number.substring(account.item.card_number.length - 4)}
+                    </Text>
+                    <Text style = {styles.cardTiles}>
+                        Cardholder
+                    </Text>
+                    <Text style = {styles.cardInfo}>
+                        {account.item.owner}
+                    </Text>
+                    <Text style = {styles.cardTiles}>
+                        Current Balance
+                    </Text>
+                    <Text style = {styles.cardInfo}>
+                        {account.item.currency} {account.item.balance}
+                    </Text>
+                    <Text style = {styles.cardTiles}>
+                        Expiry Date
+                    </Text>
+                    <Text style = {styles.cardInfo}>
+                        {account.item.card_expiration_date}
+                    </Text>
+                </View>
+          </View>
+        );
+      }
+
     render() {
         if (this.state.isLoadingCA == true || this.state.isLoadingRT == true || this.state.isLoadingCredentials == true || this.state.isLoadingStocks == true) {
             return (
@@ -229,30 +285,28 @@ export default class PrincipalScreen extends React.Component {
             }
             return (
                 <>
-                    <StatusBar backgroundColor='#7de24e'></StatusBar>
+                    <StatusBar backgroundColor='#11CB76'></StatusBar>
                     <View style={styles.container}>
+
+                        {/*Logout button*/}
                         <TouchableOpacity
                             style={styles.signOutButton}
                             activeOpacity={0.5}
                             onPress={() => this.props.navigation.replace('Auth')}>
                             <FontAwesomeIcon name="home" size={30} style={{left: 4, top: 2}}></FontAwesomeIcon>
                         </TouchableOpacity>
+
                         <View>
                             <Text style={styles.dashboardText}>Dashboard</Text> 
-
-                            {/* Current account and amount of money */}
-                            <View style = {styles.borderAccounts}>
-
-                                <View style={styles.flagStyle}>
-                                    <FlagIcon name={this.setFlag(this.state.currentAccount[0].currency)} height="60" width="60">
-                                    </FlagIcon>
-                                </View>
-
-                                <Text style = {styles.amountText}>
-                                    {this.setCurrency(this.state.currentAccount[0].currency)}{this.state.currentAccount[0].balance}
-                                </Text>
-
-                            </View> 
+                            
+                            {/* Available Cards */}
+                            <FlatList
+                                data={this.state.accounts}
+                                renderItem={this.renderItem}
+                                keyExtractor={account => account.iban}
+                                horizontal
+                                style = {{flexGrow: 0}}
+                            />
 
                             {/* Recent transactions. Press the white slide*/}
                             <TouchableOpacity onPress={() => this.props.navigation.navigate('TransactionPage')}>
@@ -404,7 +458,7 @@ const styles = StyleSheet.create(
             left: "50%",
         },
         menuBar: {
-            backgroundColor: "#7de24e",
+            backgroundColor: "#11CB76",
             width: '100%',
             height: 55,
             flex: 0.15,
@@ -429,7 +483,8 @@ const styles = StyleSheet.create(
             width: 350,
             height: 170,
             borderRadius: 20,
-            top: 65, 
+            top: '10%',
+            alignSelf: 'center',
         },
         overallBalance: {
             backgroundColor: 'white',
@@ -437,7 +492,8 @@ const styles = StyleSheet.create(
             height: 170,
             position: 'relative',
             borderRadius: 20,
-            top: 90,
+            top: '5%',
+            alignSelf: 'center',
         },
         homeButton: {
             width: 45,
@@ -482,13 +538,45 @@ const styles = StyleSheet.create(
         signOutButton: {
             position: 'absolute',
             left: 10,
-            backgroundColor: '#7de24e',
+            backgroundColor: '#11CB76',
             color: '#ffffff',
-            borderColor: '#7de24e',
+            borderColor: '#11CB76',
             height: 35,
             width: 35,
             borderRadius: 30,
             marginTop: 10,
           },
+        cardTiles: {
+            fontSize: 12,
+            color: '#ffffff',
+            fontFamily: 'ProximaNova',
+            opacity: 0.5,
+            top: '20%',
+            left: '5%',
+        },
+        cardInfo: {
+            fontSize: 16,
+            color: '#ffffff',
+            fontFamily: 'ProximaNova',
+            top: '20%',
+            left: '5%',
+        },
+        cardNumber: {
+            fontSize: 12,
+            top: '10%',
+            left: '70%',
+            color: '#ffffff',
+            fontFamily: 'ProximaNova',
+            opacity: 0.5,
+        },
+        detailsTile: {
+            backgroundColor: '#212530',
+            width: 250,
+            height: 150,
+            borderRadius: 20,
+            marginHorizontal: 20,
+            marginTop: 30,
+            alignSelf: 'center',
+        },
     }
 );

@@ -1,4 +1,4 @@
-import React, {useState, createRef} from 'react';
+import React, {createRef} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -71,7 +71,7 @@ const LoginScreen = ({navigation}) => {
   return (
     <View style={styles.mainBody}>
       <StatusBar
-        backgroundColor="#7de24e"
+        backgroundColor="#11CB76"
       />
       <ScrollView
         keyboardShouldPersistTaps="handled"
@@ -193,10 +193,10 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonStyle: {
-    backgroundColor: '#7de24e',
+    backgroundColor: '#11CB76',
     borderWidth: 0,
     color: '#ffffff',
-    borderColor: '#7de24e',
+    borderColor: '#11CB76',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,

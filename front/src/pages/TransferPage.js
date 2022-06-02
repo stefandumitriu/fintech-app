@@ -13,7 +13,7 @@ export default class TransferPage extends Component {
     render() {
         return (
             <>
-                <StatusBar backgroundColor='#7de24e'></StatusBar>
+                <StatusBar backgroundColor='#11CB76'></StatusBar>
                 <View style={styles.container}>
                     <View style = {styles.borderAccounts}>
                         <TouchableOpacity onPress={() => this.props.navigation.navigate('TransferToFriendPage')}>

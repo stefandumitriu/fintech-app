@@ -2,6 +2,9 @@ import {
     StyleSheet,
     View,
     Text,
+    TouchableOpacity,
+    TextInput,
+    KeyboardAvoidingView,
 } from 'react-native';
   
 import React, {Component, useState} from 'react';
@@ -15,10 +18,29 @@ export default class StocksDetailsPage extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+        token: null,
         stockName: null,
         stockInfo: [],
+        quantity: null,
+        isLoadingCredentials: true,
     }
 }
+
+  async getUser() {
+    try {
+      const savedUser = await AsyncStorage.getItem("loginInfo")
+        .then(async (res) => {
+            const val = await res;
+            const currentUser = JSON.parse(val);
+            this.setState({
+                token: currentUser.token,
+                isLoadingCredentials: false,
+            });
+        });       
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   async getStock() {
     try {
@@ -47,7 +69,34 @@ export default class StocksDetailsPage extends React.Component {
     }
   }
 
+  buyStocks() {
+    axios({
+        method: "POST",
+        url: "http://3.70.21.159:8000/stocks/account/",
+        data: {
+            symbol: "\"" + this.state.stockInfo.symbol + "\"",
+            quantity: this.state.quantity,
+            operation: "\"" + "buy" + "\"",
+        },
+        headers: {Authorization: this.state.token, "Content-Type": "application/json"}
+      }) .catch(error => console.log(error))
+  }
+
+  sellStocks() {
+    axios({
+        method: "POST",
+        url: "http://3.70.21.159:8000/stocks/account/",
+        data: {
+            symbol: "\"" + this.state.stockInfo.symbol + "\"",
+            quantity: this.state.quantity,
+            operation: "sell"
+        },
+        headers: {Authorization: this.state.token, "Content-Type": "application/json"}
+      }) .catch(error => console.log(error))
+  }
+
   componentDidMount() {
+    this.getUser();
     Promise.resolve(this.getStock())
         .then(() => {
             this.getStocksDetails();
@@ -74,6 +123,31 @@ export default class StocksDetailsPage extends React.Component {
           <View style={styles.divider}/>
           <Text style={styles.stockBase}>Market Cap</Text>
           <Text style={styles.stockName}>$ {this.state.stockInfo.market_cap}</Text>
+
+          <TextInput
+            style={styles.inputStyle}
+            placeholder="Enter the amount of shares to buy/sell"
+            placeholderTextColor="#8b9cb5"
+            keyboardType="numeric"
+            returnKeyType="done"
+            underlineColorAndroid="#f000"
+            onChangeText = {text => this.setState({quantity: text})}
+          />
+
+          <TouchableOpacity
+            style={styles.stockBuyButton}
+            activeOpacity={0.5}
+            onPress={() => this.buyStocks()}>
+            <Text style={styles.textButtonStyle}>Buy</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.stockSellButton}
+            activeOpacity={0.5}
+            onPress={() => this.sellStocks()}>
+            <Text style={styles.textButtonStyle}>Sell</Text>
+          </TouchableOpacity>
+
         </View>
       </>
     )
@@ -81,6 +155,15 @@ export default class StocksDetailsPage extends React.Component {
 };
 
 const styles = StyleSheet.create({
+  inputStyle: {
+    height: 40,
+    width: 300,
+    top: "5%",
+    paddingLeft: 15,
+    borderWidth: 1,
+    borderRadius: 30,
+    alignSelf: 'center',
+  },
   stockBase: {
     fontSize: 22,
     color: '#000000',
@@ -110,6 +193,27 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderBottomColor: '#2f2f2f',
     borderBottomWidth: 1,
+  },
+  stockBuyButton: {
+    width: 100,
+    height: 30,
+    borderRadius: 30,
+    backgroundColor: '#24cc18',
+    top: "13%",
+    left: "15%",
+  },
+  stockSellButton: {
+    width: 100,
+    height: 30,
+    borderRadius: 30,
+    backgroundColor: '#ed2618',
+    top: "6%",
+    left: "60%",
+  },
+  textButtonStyle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
   
