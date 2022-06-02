@@ -15,6 +15,7 @@ import TransferPage from './pages/TransferPage';
 import TransferToFriendPage from './pages/TransferToFriendPage';
 import SpendingAnalysisPage from './pages/SpendingAnalysisPage';
 import TransferNFCPage from './pages/TransferNFCPage';
+import ExchangePage from './pages/ExchangePage';
 
 const Stack = createStackNavigator();
 
@@ -114,6 +115,11 @@ const Menu = () => {
       <Stack.Screen 
         name="SpendingAnalysisPage"
         component={SpendingAnalysisPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen 
+        name="ExchangePage"
+        component={ExchangePage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

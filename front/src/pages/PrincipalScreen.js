@@ -8,7 +8,7 @@ import FlagIcon from 'react-native-ico-flags';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Font from 'expo-font';
-
+import { Entypo as Icon } from '@expo/vector-icons';
 
 const baseUrl = 'http://3.70.21.159:8000';
 export default class PrincipalScreen extends React.Component {
@@ -293,7 +293,15 @@ export default class PrincipalScreen extends React.Component {
                             style={styles.signOutButton}
                             activeOpacity={0.5}
                             onPress={() => this.props.navigation.replace('Auth')}>
-                            <FontAwesomeIcon name="home" size={30} style={{left: 4, top: 2}}></FontAwesomeIcon>
+                            <Icon name="log-out" size={30}></Icon>
+                        </TouchableOpacity>
+
+                        {/*Exchange currency*/}
+                        <TouchableOpacity
+                            style={styles.exchangeButton}
+                            activeOpacity={0.5}
+                            onPress={() => this.props.navigation.navigate('ExchangePage')}>
+                            <Icon name="calculator" size={30}></Icon>
                         </TouchableOpacity>
 
                         <View>
@@ -536,16 +544,21 @@ const styles = StyleSheet.create(
             borderRadius: 10,
         },
         signOutButton: {
+            height: 45,
+            width: 45,
             position: 'absolute',
-            left: 10,
-            backgroundColor: '#11CB76',
-            color: '#ffffff',
-            borderColor: '#11CB76',
-            height: 35,
-            width: 35,
-            borderRadius: 30,
-            marginTop: 10,
+            top: "2%",
+            left: "2%",
+            borderRadius: 10,
           },
+        exchangeButton: {
+            width: 45,
+            height: 45,
+            position: 'absolute',
+            top: "2%",
+            right: "0%",
+            borderRadius: 10,
+        },
         cardTiles: {
             fontSize: 12,
             color: '#ffffff',

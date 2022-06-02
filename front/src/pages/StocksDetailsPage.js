@@ -4,7 +4,6 @@ import {
     Text,
     TouchableOpacity,
     TextInput,
-    KeyboardAvoidingView,
 } from 'react-native';
   
 import React, {Component, useState} from 'react';
@@ -21,7 +20,7 @@ export default class StocksDetailsPage extends React.Component {
         token: null,
         stockName: null,
         stockInfo: [],
-        quantity: null,
+        quantity: 0.0,
         isLoadingCredentials: true,
     }
 }
@@ -74,12 +73,13 @@ export default class StocksDetailsPage extends React.Component {
         method: "POST",
         url: "http://3.70.21.159:8000/stocks/account/",
         data: {
-            symbol: "\"" + this.state.stockInfo.symbol + "\"",
-            quantity: this.state.quantity,
-            operation: "\"" + "buy" + "\"",
+            symbol: this.state.stockInfo.symbol,
+            quantity: parseFloat(this.state.quantity),
+            operation: "buy",
         },
         headers: {Authorization: this.state.token, "Content-Type": "application/json"}
-      }) .catch(error => console.log(error))
+      }) .then(alert("Successfully bought " + this.state.quantity + " shares of " + this.state.stockInfo.name))
+      .catch(error => console.log(error))
   }
 
   sellStocks() {
@@ -87,12 +87,13 @@ export default class StocksDetailsPage extends React.Component {
         method: "POST",
         url: "http://3.70.21.159:8000/stocks/account/",
         data: {
-            symbol: "\"" + this.state.stockInfo.symbol + "\"",
-            quantity: this.state.quantity,
-            operation: "sell"
+            symbol: this.state.stockInfo.symbol,
+            quantity: parseFloat(this.state.quantity),
+            operation: "sell",
         },
         headers: {Authorization: this.state.token, "Content-Type": "application/json"}
-      }) .catch(error => console.log(error))
+      }) .then(alert("Successfully sold " + this.state.quantity + " shares of " + this.state.stockInfo.name))
+      .catch(error => console.log(error))
   }
 
   componentDidMount() {
