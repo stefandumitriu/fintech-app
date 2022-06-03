@@ -20,16 +20,12 @@ const url = 'http://10.0.2.2:8000/login/'
 const awsUrl = 'http://3.70.21.159:8000'
 
 const LoginScreen = ({navigation}) => {
-  const emailInputRef = createRef();
   const passwordInputRef = createRef();
 
   const LoginSchema = Yup.object().shape({
     phone_number: Yup.number()
       .integer('Must be an integer')
       .positive('Must be a positive number')
-      .required('Required'),
-    email: Yup.string()
-      .email('Invalid email')
       .required('Required'),
     password: Yup.string()
       .min(3, 'Too Short!')
@@ -44,7 +40,7 @@ const LoginScreen = ({navigation}) => {
   };
   const formik = useFormik({
     validationSchema: LoginSchema,
-    initialValues: { phone_number: '', email: '', password: '' },
+    initialValues: { phone_number: '', password: '' },
     onSubmit: (values, actions) => axios({
       method: "POST",
       url: "http://3.70.21.159:8000/login/",
@@ -57,7 +53,7 @@ const LoginScreen = ({navigation}) => {
         actions.setSubmitting(false);
         const value = {
           token: 'Token ' + response.data['token'],
-          email: values.email
+          email: response.data['email'],
         };
         storeUser(value);
         navigation.replace('Menu');
@@ -99,35 +95,13 @@ const LoginScreen = ({navigation}) => {
                 keyboardType="numeric"
                 returnKeyType="next"
                 onSubmitEditing={() =>
-                  emailInputRef.current && emailInputRef.current.focus()
+                  passwordInputRef.current && passwordInputRef.current.focus()
                 }
                 underlineColorAndroid="#f000"
                 blurOnSubmit={false}
               />
             </View>
             <View style={styles.SectionStyle}>
-              <View style={styles.IconStyle}>
-                {formik.touched.email && formik.errors.email ? 
-                  (<Icon name={'mail'} color='#ff292f' size={16} />) : 
-                  (<Icon name={'mail'} color='#223e4b' size={16} />)}
-              </View>
-            <TextInput
-              style={styles.inputStyle}
-              onChangeText={formik.handleChange('email')}
-              onBlur={formik.handleBlur('email')}
-              errors={formik.errors.email}
-              touched={formik.touched.email}
-              underlineColorAndroid="#f000"
-              placeholder="Enter Email"
-              placeholderTextColor="#8b9cb5"
-              keyboardType="email-address"
-              ref={emailInputRef}
-              returnKeyType="next"
-              onSubmitEditing={() =>
-                passwordInputRef.current && passwordInputRef.current.focus()
-              }
-              blurOnSubmit={false}
-            />
           </View>
             <View style={styles.SectionStyle}>
               <View style={styles.IconStyle}>
@@ -184,10 +158,9 @@ const styles = StyleSheet.create({
   SectionStyle: {
     flexDirection: 'row',
     height: 40,
-    marginTop: 20,
+    marginTop: -10,
     marginLeft: 35,
     marginRight: 35,
-    margin: 10,
   },
   IconStyle: {
     padding: 10,
@@ -218,6 +191,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 30,
     borderColor: '#dadae8',
+    
   },
   registerTextStyle: {
     color: '#000000',

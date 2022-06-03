@@ -564,14 +564,14 @@ const styles = StyleSheet.create(
             color: '#ffffff',
             fontFamily: 'ProximaNova',
             opacity: 0.5,
-            top: '20%',
+            top: '15%',
             left: '5%',
         },
         cardInfo: {
             fontSize: 16,
             color: '#ffffff',
             fontFamily: 'ProximaNova',
-            top: '20%',
+            top: '15%',
             left: '5%',
         },
         cardNumber: {
