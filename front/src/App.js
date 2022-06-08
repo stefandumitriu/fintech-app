@@ -14,7 +14,9 @@ import WalletPage from './pages/WalletPage';
 import TransferPage from './pages/TransferPage';
 import TransferToFriendPage from './pages/TransferToFriendPage';
 import SpendingAnalysisPage from './pages/SpendingAnalysisPage';
-import TransferNFCPage from './pages/TransferNFCPage';
+import TransferNFCSenderPage from './pages/TransferNFCSenderPage';
+import TransferNFCReceiverPage from './pages/TransferNFCReceiverPage';
+import TransferNFCMenu from './pages/TransferNFCMenu';
 import ExchangePage from './pages/ExchangePage';
 
 const Stack = createStackNavigator();
@@ -81,8 +83,18 @@ const Transfer = () => {
         options={{headerShown: false}}
       />
       <Stack.Screen
-        name="TransferNFCPage"
-        component={TransferNFCPage}
+        name="TransferNFCMenu"
+        component={TransferNFCMenu}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="TransferNFCSenderPage"
+        component={TransferNFCSenderPage}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="TransferNFCReceiverPage"
+        component={TransferNFCReceiverPage}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

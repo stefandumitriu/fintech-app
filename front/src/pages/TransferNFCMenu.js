@@ -1,35 +1,33 @@
 import React, {Component} from 'react';
 import { TouchableOpacity, View, StyleSheet, Text, StatusBar } from 'react-native';
-import FontistoIcons from 'react-native-vector-icons/Fontisto';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import AntDesign from 'react-native-vector-icons/AntDesign'
 
-
-export default class TransferPage extends Component {
+export default class TransferMenu extends Component {
     constructor(props) {
         super(props);
         this.state = {
 
         }
-    };
+      }
     render() {
         return (
             <>
                 <StatusBar backgroundColor='#11CB76'></StatusBar>
                 <View style={styles.container}>
                     <View style = {styles.borderAccounts}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('TransferToFriendPage')}>
-                            <FontistoIcons name="arrow-swap" size={30} style={{left:"10%", top: "45%"}}></FontistoIcons>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('TransferNFCSenderPage')}>
+                            <AntDesign name="arrowright" size={30} style={{left:"10%", top: "45%"}}></AntDesign>
                             <Text style={{fontSize: 20, fontWeight: "bold", alignSelf: 'center', left:"7%", top: "-5%"}}>
-                                Transfer to Friends
+                                Send Money
                             </Text>
                         </TouchableOpacity>
                     </View>
 
                     <View style = {styles.recentTransactions}>
-                        <TouchableOpacity onPress={() => this.props.navigation.navigate('TransferNFCMenu')}>
-                            <MaterialCommunityIcons name="nfc" size={30} style={{left:"10%", top: "40%"}}></MaterialCommunityIcons>
+                        <TouchableOpacity onPress={() => this.props.navigation.navigate('TransferNFCReceiverPage')}>
+                            <AntDesign name="arrowleft" size={30} style={{left:"10%", top: "40%"}}></AntDesign>
                             <Text style={{fontSize: 20, fontWeight: "bold", alignSelf: 'center', left:"7%", top: "-5%"}}>
-                                Transfer with NFC
+                                Receive Money
                             </Text>
                         </TouchableOpacity>
                     </View>

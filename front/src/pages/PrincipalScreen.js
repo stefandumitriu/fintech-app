@@ -47,7 +47,7 @@ export default class PrincipalScreen extends React.Component {
                     email: currentUser.email,
                     isLoadingCredentials: false,
                 });
-            });       
+            });
         } catch (error) {
           console.log(error);
         }
@@ -242,33 +242,63 @@ export default class PrincipalScreen extends React.Component {
     }
 
     renderItem (account) {
-        return (
-          <View>
-                <View style={styles.detailsTile}>
-                    <Text style = {styles.cardNumber}>
-                        **** {account.item.card_number.substring(account.item.card_number.length - 4)}
-                    </Text>
-                    <Text style = {styles.cardTiles}>
-                        Cardholder
-                    </Text>
-                    <Text style = {styles.cardInfo}>
-                        {account.item.owner}
-                    </Text>
-                    <Text style = {styles.cardTiles}>
-                        Current Balance
-                    </Text>
-                    <Text style = {styles.cardInfo}>
-                        {account.item.currency} {account.item.balance}
-                    </Text>
-                    <Text style = {styles.cardTiles}>
-                        Expiry Date
-                    </Text>
-                    <Text style = {styles.cardInfo}>
-                        {account.item.card_expiration_date}
-                    </Text>
+        console.log(account.item.cardNumber);
+        if (account.item.card_number != null) {
+            return (
+            <View>
+                    <View style={styles.detailsTile}>
+                        <Text style = {styles.cardNumber}>
+                            **** {account.item.card_number.substring(account.item.card_number.length - 4)}
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Cardholder
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.owner}
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Current Balance
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.currency} {account.item.balance}
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Expiry Date
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.card_expiration_date}
+                        </Text>
+                    </View>
+            </View>
+            );
+        } else {
+            return (
+                <View>
+                    <View style={styles.detailsTile}>
+                        <Text style = {styles.cardNumber}>
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Cardholder
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.owner}
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Current Balance
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.currency} {account.item.balance}
+                        </Text>
+                        <Text style = {styles.cardTiles}>
+                            Expiry Date
+                        </Text>
+                        <Text style = {styles.cardInfo}>
+                            {account.item.card_expiration_date}
+                        </Text>
+                    </View>
                 </View>
-          </View>
-        );
+                );
+        }
       }
 
     render() {
@@ -360,7 +390,7 @@ export default class PrincipalScreen extends React.Component {
                     {/* Bottom menu bar */}
                     <View style={styles.menuBar}>
                         <View style={styles.homeButton}>
-                                <TouchableOpacity onPress={() => alert("Home button pressed!")}>
+                                <TouchableOpacity onPress={() => {this.getRecentTransactions(), this.getAccounts()}}>
                                     <FontAwesomeIcon name="home" size={40} style={{left: 3, top: 2}}></FontAwesomeIcon>
                                 </TouchableOpacity>
                         </View>
@@ -564,14 +594,14 @@ const styles = StyleSheet.create(
             color: '#ffffff',
             fontFamily: 'ProximaNova',
             opacity: 0.5,
-            top: '15%',
+            top: '20%',
             left: '5%',
         },
         cardInfo: {
             fontSize: 16,
             color: '#ffffff',
             fontFamily: 'ProximaNova',
-            top: '15%',
+            top: '20%',
             left: '5%',
         },
         cardNumber: {

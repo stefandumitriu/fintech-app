@@ -70,7 +70,7 @@ export default class TransactionPage extends React.Component {
                 if (recentTransaction.sender === this.state.email) {
                     return (
                         <View key={recentTransaction.id}>
-                            <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#11CB76' />
+                            <AntDesignIcons name="arrowup" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
                                 To: {recentTransaction.receiver}{"\n"}
                                 {recentTransaction.timestamp}
@@ -83,7 +83,7 @@ export default class TransactionPage extends React.Component {
                 } else {
                     return (
                         <View key={recentTransaction.id}>
-                            <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#11CB76' />
+                            <AntDesignIcons name="arrowdown" size={40} style={styles.arrows} color='#7de24e' />
                             <Text style={styles.userText}>
                                 From: {recentTransaction.sender}{"\n"}
                                 {recentTransaction.timestamp}

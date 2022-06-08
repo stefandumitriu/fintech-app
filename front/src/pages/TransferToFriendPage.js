@@ -30,7 +30,7 @@ export default class TransferPage extends Component {
                     email: currentUser.email,
                     isLoadingCredentials: false,
                 });
-            });       
+            });   
         } catch (error) {
             console.log(error);
         }
@@ -51,7 +51,7 @@ export default class TransferPage extends Component {
                 receiver: this.state.receiver
             },
             headers: {Authorization: this.state.token, "Content-Type": "application/json"}
-          }).then(response => alert("Transfer Done!"))
+          }).then(response => console.log(response.data), alert("Transfer Done!"))
           .catch(error => console.log(error))
       }
 

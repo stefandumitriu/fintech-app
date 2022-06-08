@@ -1,4 +1,4 @@
-import React, {createRef} from 'react';
+import React, {useState, createRef} from 'react';
 import {
   StyleSheet,
   TextInput,
@@ -277,9 +277,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   buttonStyle: {
-    backgroundColor: '#11CB76',
+    backgroundColor: '#7de24e',
     borderWidth: 0,
-    borderColor: '#11CB76',
+    borderColor: '#7de24e',
     height: 40,
     alignItems: 'center',
     borderRadius: 30,
